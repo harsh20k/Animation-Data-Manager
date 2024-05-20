@@ -60,7 +60,7 @@ struct VideoList: View {
             }
 
             if let thumbnail = thumbnailImage {
-                ThumbnailView(thumbnail: thumbnail, downloadAction: downloadThumbnail)
+                ThumbnailView(thumbnail: thumbnail, retryAction: captureThumbnail, downloadAction: downloadThumbnail)
             } else {
                 CaptureButton(action: captureThumbnail)
             }
@@ -125,6 +125,7 @@ struct VideoPlayerView: View {
 
 struct ThumbnailView: View {
     let thumbnail: NSImage
+    let retryAction: () -> Void
     let downloadAction: () -> Void
 
     var body: some View {
@@ -134,12 +135,21 @@ struct ThumbnailView: View {
                 .scaledToFit()
                 .frame(width: 200, height: 200)
                 .padding()
-            Button(action: downloadAction) {
-                Text("Download Thumbnail")
-                    .padding()
-                    .background(Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+            HStack {
+                Button(action: retryAction) {
+                    Text("Retry Capture")
+                        .padding()
+                        .background(Color.orange)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                Button(action: downloadAction) {
+                    Text("Download Thumbnail")
+                        .padding()
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
             }
         }
     }
@@ -184,7 +194,7 @@ struct CompressionSection: View {
                 .font(.headline)
                 .padding(.bottom)
 
-            CompressionOptionsForm(options: $compressionOptions)
+            CompressionOptionsForm(options: $compressionOptions, duration: videoInfo.duration)
 
             Button(action: compressVideo) {
                 Text("Compress and Download")
@@ -230,26 +240,6 @@ struct CompressionSection: View {
                     }
                 }
             }
-        }
-    }
-}
-
-struct CompressionOptions {
-    var preset: String = AVAssetExportPresetMediumQuality
-}
-
-struct CompressionOptionsForm: View {
-    @Binding var options: CompressionOptions
-
-    var body: some View {
-        Form {
-            Picker("Quality", selection: $options.preset) {
-                Text("Low").tag(AVAssetExportPresetLowQuality)
-                Text("Medium").tag(AVAssetExportPresetMediumQuality)
-                Text("High").tag(AVAssetExportPresetHighestQuality)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .padding()
         }
     }
 }
