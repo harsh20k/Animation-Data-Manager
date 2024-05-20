@@ -22,6 +22,8 @@
 		3AFDC5312BFBD5A2005EE4C1 /* VideoUploadSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC5302BFBD5A2005EE4C1 /* VideoUploadSection.swift */; };
 		3AFDC5332BFBD5C1005EE4C1 /* VideoControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC5322BFBD5C1005EE4C1 /* VideoControls.swift */; };
 		3AFDC5352BFBD5EB005EE4C1 /* UploadProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC5342BFBD5EB005EE4C1 /* UploadProgressView.swift */; };
+		3AFDC53D2BFBFAFF005EE4C1 /* CompressionOptionsForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC53C2BFBFAFF005EE4C1 /* CompressionOptionsForm.swift */; };
+		3AFDC53F2BFC05AC005EE4C1 /* CompressionOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC53E2BFC05AC005EE4C1 /* CompressionOptionsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +46,8 @@
 		3AFDC5302BFBD5A2005EE4C1 /* VideoUploadSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoUploadSection.swift; sourceTree = "<group>"; };
 		3AFDC5322BFBD5C1005EE4C1 /* VideoControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoControls.swift; sourceTree = "<group>"; };
 		3AFDC5342BFBD5EB005EE4C1 /* UploadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgressView.swift; sourceTree = "<group>"; };
+		3AFDC53C2BFBFAFF005EE4C1 /* CompressionOptionsForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompressionOptionsForm.swift; sourceTree = "<group>"; };
+		3AFDC53E2BFC05AC005EE4C1 /* CompressionOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompressionOptionsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +107,8 @@
 				3AFDC5302BFBD5A2005EE4C1 /* VideoUploadSection.swift */,
 				3AFDC5322BFBD5C1005EE4C1 /* VideoControls.swift */,
 				3AFDC5342BFBD5EB005EE4C1 /* UploadProgressView.swift */,
+				3AFDC53C2BFBFAFF005EE4C1 /* CompressionOptionsForm.swift */,
+				3AFDC53E2BFC05AC005EE4C1 /* CompressionOptionsView.swift */,
 			);
 			path = AnimationDataManager;
 			sourceTree = "<group>";
@@ -195,8 +201,10 @@
 				3AFDC52F2BFBCCA0005EE4C1 /* VideoListView.swift in Sources */,
 				3AFDC5352BFBD5EB005EE4C1 /* UploadProgressView.swift in Sources */,
 				3ADE80932BF76E3B00F20391 /* VideoUploadView.swift in Sources */,
+				3AFDC53F2BFC05AC005EE4C1 /* CompressionOptionsView.swift in Sources */,
 				3ADE80952BF7815900F20391 /* PrettyToggleStyle.swift in Sources */,
 				3ADE808F2BF742BB00F20391 /* CustomDivider.swift in Sources */,
+				3AFDC53D2BFBFAFF005EE4C1 /* CompressionOptionsForm.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

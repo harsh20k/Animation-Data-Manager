@@ -5,17 +5,25 @@ struct VideoListView: View {
     var videoInfo1: VideoInfo
     var videoInfo2: VideoInfo
     @Binding var navigateBack: Bool
+    @State private var navigateToNextPage = false
     @State private var thumbnailImage: NSImage?
     @State private var player: AVPlayer?
     @State private var compressionOptions = CompressionOptions()
 
     var body: some View {
         VStack {
-            BackButton(navigateBack: $navigateBack)
-            VideoList(videoInfo1: videoInfo1, videoInfo2: videoInfo2, thumbnailImage: $thumbnailImage, player: $player)
-            Spacer()
-            CompressionSection(videoInfo: videoInfo2, compressionOptions: $compressionOptions, player: $player)
-            UploadButton(action: uploadVideos)
+            if navigateToNextPage {
+                CompressionOptionsView(videoInfo2: videoInfo2, navigateBack: $navigateToNextPage)
+            } else {
+                VStack {
+                    BackButton(navigateBack: $navigateBack)
+                    VideoList(videoInfo1: videoInfo1, videoInfo2: videoInfo2, thumbnailImage: $thumbnailImage, player: $player)
+                    Spacer()
+                    CompressionSection(videoInfo: videoInfo2, compressionOptions: $compressionOptions, player: $player)
+                    UploadButton(action: uploadVideos)
+                    NextPageButton(action: { navigateToNextPage = true })
+                }
+            }
         }
         .padding()
     }
@@ -240,6 +248,30 @@ struct CompressionSection: View {
                     }
                 }
             }
+        }
+    }
+}
+
+struct NextPageButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Next Page")
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+        }
+    }
+}
+
+struct HelloWorldView: View {
+    var body: some View {
+        VStack {
+            Text("Hello World")
+                .font(.largeTitle)
+                .padding()
         }
     }
 }
