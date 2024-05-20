@@ -6,92 +6,148 @@
 //
 
 import Foundation
-import SwiftUI
 
 class CouchDBManager: ObservableObject {
     static let shared = CouchDBManager()
-    @Published var documents: [CouchDBDocument] = []
+    private let databaseName = "mydatabase"
+    private let couchDBBaseURL = "http://127.0.0.1:5984"
+    private let username = "admin"
+    private let password = "adminadmin"
 
-    let databaseURL = URL(string: "http://127.0.0.1:5984/mydatabase")!
-    let username = "admin"
-    let password = "adminadmin"
-
-    private init() {}
-
-    private func createRequest(url: URL, method: String, body: Data? = nil) -> URLRequest {
-        var request = URLRequest(url: url)
-        request.httpMethod = method
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let loginString = "\(username):\(password)"
-        let loginData = loginString.data(using: .utf8)!
-        let base64LoginString = loginData.base64EncodedString()
-        request.addValue("Basic \(base64LoginString)", forHTTPHeaderField: "Authorization")
-        
-        if let body = body {
-            request.httpBody = body
-        }
-        
-        return request
-    }
-
-    func insertDocument(document: CouchDBDocument) {
-        guard let url = URL(string: "\(databaseURL)") else { return }
-        let body: Data
-        do {
-            body = try JSONEncoder().encode(document)
-        } catch {
-            print("Error encoding document: \(error)")
+    func uploadVideoPair(videoInfo1: VideoInfo, videoInfo2: VideoInfo, completion: @escaping (Bool, String?) -> Void, progressHandler: @escaping (Int64, Int64) -> Void) {
+        let document = CouchDBDocument(video1: videoInfo1, video2: videoInfo2)
+        guard let documentData = try? JSONEncoder().encode(document) else {
+            completion(false, nil)
             return
         }
-        let request = createRequest(url: url, method: "POST", body: body)
+
+        var request = URLRequest(url: URL(string: "\(couchDBBaseURL)/\(databaseName)")!)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let credentials = "\(username):\(password)".data(using: .utf8)!.base64EncodedString()
+        request.addValue("Basic \(credentials)", forHTTPHeaderField: "Authorization")
+        request.httpBody = documentData
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error inserting document: \(error)")
+            guard let data = data, error == nil else {
+                completion(false, nil)
                 return
             }
-            print("Document inserted")
+
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201,
+               let responseData = try? JSONDecoder().decode(CouchDBCreateResponse.self, from: data) {
+                self.uploadVideoAttachments(documentID: responseData.id, videoInfo1: videoInfo1, videoInfo2: videoInfo2, rev: responseData.rev, completion: completion, progressHandler: progressHandler)
+            } else {
+                completion(false, nil)
+            }
         }
         task.resume()
     }
 
-    func fetchDocuments() {
-        guard let url = URL(string: "\(databaseURL)/_all_docs?include_docs=true") else { return }
-        let request = createRequest(url: url, method: "GET")
-
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error fetching documents: \(error)")
+    private func uploadVideoAttachments(documentID: String, videoInfo1: VideoInfo, videoInfo2: VideoInfo, rev: String, completion: @escaping (Bool, String?) -> Void, progressHandler: @escaping (Int64, Int64) -> Void) {
+        uploadVideoAttachment(documentID: documentID, rev: rev, videoInfo: videoInfo1, progressHandler: progressHandler) { success, newRev in
+            guard success, let newRev = newRev else {
+                completion(false, nil)
                 return
             }
-            guard let data = data else { return }
+            self.uploadVideoAttachment(documentID: documentID, rev: newRev, videoInfo: videoInfo2, progressHandler: progressHandler, completion: completion)
+        }
+    }
+
+    private func uploadVideoAttachment(documentID: String, rev: String, videoInfo: VideoInfo, progressHandler: @escaping (Int64, Int64) -> Void, completion: @escaping (Bool, String?) -> Void) {
+        var request = URLRequest(url: URL(string: "\(couchDBBaseURL)/\(databaseName)/\(documentID)/\(videoInfo.fileName)?rev=\(rev)")!)
+        request.httpMethod = "PUT"
+        request.addValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+        let credentials = "\(username):\(password)".data(using: .utf8)!.base64EncodedString()
+        request.addValue("Basic \(credentials)", forHTTPHeaderField: "Authorization")
+
+        let task = URLSession.shared.uploadTask(with: request, fromFile: videoInfo.fileURL) { data, response, error in
+            guard let data = data, error == nil else {
+                completion(false, nil)
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201,
+               let responseData = try? JSONDecoder().decode(CouchDBCreateResponse.self, from: data) {
+                completion(true, responseData.rev)
+            } else {
+                completion(false, nil)
+            }
+        }
+        task.resume()
+    }
+
+    func fetchAllDocuments(completion: @escaping ([CouchDBDocument]) -> Void) {
+        var request = URLRequest(url: URL(string: "\(couchDBBaseURL)/\(databaseName)/_all_docs?include_docs=true")!)
+        request.httpMethod = "GET"
+        let credentials = "\(username):\(password)".data(using: .utf8)!.base64EncodedString()
+        request.addValue("Basic \(credentials)", forHTTPHeaderField: "Authorization")
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error fetching documents: \(error.localizedDescription)")
+                completion([])
+                return
+            }
+            
+            guard let data = data else {
+                print("No data received from CouchDB")
+                completion([])
+                return
+            }
+
             do {
-                let allDocsResponse = try JSONDecoder().decode(AllDocsResponse.self, from: data)
-                DispatchQueue.main.async {
-                    self.documents = allDocsResponse.rows.map { $0.doc }
-                }
+                let decoder = JSONDecoder()
+                let fetchResponse = try decoder.decode(CouchDBFetchResponse.self, from: data)
+                let documents = fetchResponse.rows.compactMap { $0.doc }
+                print("Fetched documents: \(documents)") // Detailed logging
+                completion(documents)
             } catch {
-                print("Error decoding response: \(error)")
+                print("Error decoding response: \(error.localizedDescription)")
+                if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
+                    print("Received JSON: \(json)") // Detailed logging of raw JSON
+                }
+                completion([])
             }
         }
         task.resume()
     }
 }
 
-struct CouchDBDocument: Codable, Identifiable {
-    var _id: String?
-    var _rev: String?
-    var name: String
-    var age: Int
-
-    var id: String { _id ?? UUID().uuidString }
+struct VideoInfo: Identifiable, Codable {
+    var id = UUID()
+    var fileURL: URL
+    var fileName: String
+    var duration: Double
+    var fps: Float
+    var resolution: String
+    var codec: String
+    var fileSize: Int64
+    var isEdited: Bool
 }
 
-struct AllDocsResponse: Codable {
+struct CouchDBDocument: Identifiable, Codable {
+    var id: UUID
+    var video1: VideoInfo
+    var video2: VideoInfo
+
+    init(video1: VideoInfo, video2: VideoInfo) {
+        self.id = UUID()
+        self.video1 = video1
+        self.video2 = video2
+    }
+}
+
+struct CouchDBCreateResponse: Codable {
+    var ok: Bool
+    var id: String
+    var rev: String
+}
+
+struct CouchDBFetchResponse: Codable {
     var rows: [Row]
 
     struct Row: Codable {
-        var doc: CouchDBDocument
+        var doc: CouchDBDocument?
     }
 }

@@ -7,19 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A6225AC2BF869BB003D77CF /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6225AB2BF869BB003D77CF /* AVKit.framework */; };
+		3ADE808B2BF72D7C00F20391 /* ShareManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADE808A2BF72D7C00F20391 /* ShareManager.swift */; };
+		3ADE808D2BF73E8A00F20391 /* CSVDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADE808C2BF73E8A00F20391 /* CSVDataView.swift */; };
+		3ADE808F2BF742BB00F20391 /* CustomDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADE808E2BF742BB00F20391 /* CustomDivider.swift */; };
+		3ADE80912BF742FB00F20391 /* ShareSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADE80902BF742FB00F20391 /* ShareSheet.swift */; };
+		3ADE80932BF76E3B00F20391 /* VideoUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADE80922BF76E3B00F20391 /* VideoUploadView.swift */; };
+		3ADE80952BF7815900F20391 /* PrettyToggleStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADE80942BF7815900F20391 /* PrettyToggleStyle.swift */; };
 		3AE9CB672BF6300100874353 /* AnimationDataManagerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE9CB662BF6300100874353 /* AnimationDataManagerApp.swift */; };
 		3AE9CB692BF6300100874353 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE9CB682BF6300100874353 /* ContentView.swift */; };
 		3AE9CB6B2BF6300200874353 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AE9CB6A2BF6300200874353 /* Assets.xcassets */; };
 		3AE9CB6F2BF6300200874353 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AE9CB6E2BF6300200874353 /* Preview Assets.xcassets */; };
+		3AE9CB762BF6302300874353 /* CouchDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE9CB752BF6302300874353 /* CouchDBManager.swift */; };
+		3AE9CB7D2BF6ABD200874353 /* VideoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE9CB7C2BF6ABD200874353 /* VideoPreviewView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3A6225AB2BF869BB003D77CF /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Library/Frameworks/AVKit.framework; sourceTree = DEVELOPER_DIR; };
+		3A68D56B2BF88B6100AFCA25 /* Dummy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Dummy.md; sourceTree = "<group>"; };
+		3ADE808A2BF72D7C00F20391 /* ShareManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareManager.swift; sourceTree = "<group>"; };
+		3ADE808C2BF73E8A00F20391 /* CSVDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVDataView.swift; sourceTree = "<group>"; };
+		3ADE808E2BF742BB00F20391 /* CustomDivider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomDivider.swift; sourceTree = "<group>"; };
+		3ADE80902BF742FB00F20391 /* ShareSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareSheet.swift; sourceTree = "<group>"; };
+		3ADE80922BF76E3B00F20391 /* VideoUploadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoUploadView.swift; sourceTree = "<group>"; };
+		3ADE80942BF7815900F20391 /* PrettyToggleStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrettyToggleStyle.swift; sourceTree = "<group>"; };
 		3AE9CB632BF6300100874353 /* AnimationDataManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AnimationDataManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3AE9CB662BF6300100874353 /* AnimationDataManagerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationDataManagerApp.swift; sourceTree = "<group>"; };
 		3AE9CB682BF6300100874353 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3AE9CB6A2BF6300200874353 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3AE9CB6C2BF6300200874353 /* AnimationDataManager.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AnimationDataManager.entitlements; sourceTree = "<group>"; };
 		3AE9CB6E2BF6300200874353 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		3AE9CB752BF6302300874353 /* CouchDBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouchDBManager.swift; sourceTree = "<group>"; };
+		3AE9CB792BF638C000874353 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3AE9CB7C2BF6ABD200874353 /* VideoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,17 +47,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3A6225AC2BF869BB003D77CF /* AVKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3A6225AA2BF869BA003D77CF /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3A6225AB2BF869BB003D77CF /* AVKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3AE9CB5A2BF6300100874353 = {
 			isa = PBXGroup;
 			children = (
 				3AE9CB652BF6300100874353 /* AnimationDataManager */,
 				3AE9CB642BF6300100874353 /* Products */,
+				3A6225AA2BF869BA003D77CF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -52,11 +82,21 @@
 		3AE9CB652BF6300100874353 /* AnimationDataManager */ = {
 			isa = PBXGroup;
 			children = (
+				3AE9CB792BF638C000874353 /* Info.plist */,
 				3AE9CB662BF6300100874353 /* AnimationDataManagerApp.swift */,
 				3AE9CB682BF6300100874353 /* ContentView.swift */,
 				3AE9CB6A2BF6300200874353 /* Assets.xcassets */,
 				3AE9CB6C2BF6300200874353 /* AnimationDataManager.entitlements */,
 				3AE9CB6D2BF6300200874353 /* Preview Content */,
+				3AE9CB752BF6302300874353 /* CouchDBManager.swift */,
+				3AE9CB7C2BF6ABD200874353 /* VideoPreviewView.swift */,
+				3ADE808A2BF72D7C00F20391 /* ShareManager.swift */,
+				3ADE808C2BF73E8A00F20391 /* CSVDataView.swift */,
+				3ADE808E2BF742BB00F20391 /* CustomDivider.swift */,
+				3ADE80902BF742FB00F20391 /* ShareSheet.swift */,
+				3ADE80922BF76E3B00F20391 /* VideoUploadView.swift */,
+				3ADE80942BF7815900F20391 /* PrettyToggleStyle.swift */,
+				3A68D56B2BF88B6100AFCA25 /* Dummy.md */,
 			);
 			path = AnimationDataManager;
 			sourceTree = "<group>";
@@ -139,8 +179,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3AE9CB762BF6302300874353 /* CouchDBManager.swift in Sources */,
+				3AE9CB7D2BF6ABD200874353 /* VideoPreviewView.swift in Sources */,
 				3AE9CB692BF6300100874353 /* ContentView.swift in Sources */,
 				3AE9CB672BF6300100874353 /* AnimationDataManagerApp.swift in Sources */,
+				3ADE808B2BF72D7C00F20391 /* ShareManager.swift in Sources */,
+				3ADE80932BF76E3B00F20391 /* VideoUploadView.swift in Sources */,
+				3ADE808D2BF73E8A00F20391 /* CSVDataView.swift in Sources */,
+				3ADE80952BF7815900F20391 /* PrettyToggleStyle.swift in Sources */,
+				3ADE808F2BF742BB00F20391 /* CustomDivider.swift in Sources */,
+				3ADE80912BF742FB00F20391 /* ShareSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,6 +305,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
@@ -267,11 +316,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AnimationDataManager/AnimationDataManager.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AnimationDataManager/Preview Content\"";
+				DEVELOPMENT_TEAM = GSBGP6W934;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AnimationDataManager/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -287,6 +339,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.0;
+				NSAppTransportSecurity = "<dict>\n\t\t<key>NSExceptionDomains</key>\n\t\t<dict>\n\t\t\t<key>localhost</key>\n\t\t\t<dict>\n\t\t\t\t<key>NSExceptionAllowsInsecureHTTPLoads</key>\n\t\t\t\t<true/>\n\t\t\t\t<key>NSIncludesSubdomains</key>\n\t\t\t\t<true/>\n\t\t\t</dict>\n\t\t</dict>\n\t</dict>";
 				PRODUCT_BUNDLE_IDENTIFIER = com.AnimeAI.AnimationDataManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -303,11 +356,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AnimationDataManager/AnimationDataManager.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"AnimationDataManager/Preview Content\"";
+				DEVELOPMENT_TEAM = GSBGP6W934;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AnimationDataManager/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -323,6 +379,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 14.4;
 				MARKETING_VERSION = 1.0;
+				NSAppTransportSecurity = "<dict>\n\t\t<key>NSExceptionDomains</key>\n\t\t<dict>\n\t\t\t<key>localhost</key>\n\t\t\t<dict>\n\t\t\t\t<key>NSExceptionAllowsInsecureHTTPLoads</key>\n\t\t\t\t<true/>\n\t\t\t\t<key>NSIncludesSubdomains</key>\n\t\t\t\t<true/>\n\t\t\t</dict>\n\t\t</dict>\n\t</dict>";
 				PRODUCT_BUNDLE_IDENTIFIER = com.AnimeAI.AnimationDataManager;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
