@@ -7,12 +7,14 @@ struct VideoListView: View {
     @Binding var navigateBack: Bool
     @State private var thumbnailImage: NSImage?
     @State private var player: AVPlayer?
+    @State private var compressionOptions = CompressionOptions()
 
     var body: some View {
         VStack {
             BackButton(navigateBack: $navigateBack)
             VideoList(videoInfo1: videoInfo1, videoInfo2: videoInfo2, thumbnailImage: $thumbnailImage, player: $player)
             Spacer()
+            CompressionSection(videoInfo: videoInfo2, compressionOptions: $compressionOptions, player: $player)
             UploadButton(action: uploadVideos)
         }
         .padding()
@@ -167,6 +169,87 @@ struct UploadButton: View {
                 .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(10)
+        }
+    }
+}
+
+struct CompressionSection: View {
+    var videoInfo: VideoInfo
+    @Binding var compressionOptions: CompressionOptions
+    @Binding var player: AVPlayer?
+
+    var body: some View {
+        VStack {
+            Text("Video Compression Options")
+                .font(.headline)
+                .padding(.bottom)
+
+            CompressionOptionsForm(options: $compressionOptions)
+
+            Button(action: compressVideo) {
+                Text("Compress and Download")
+                    .padding()
+                    .background(Color.orange)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(10)
+        .shadow(radius: 5)
+        .padding(.top)
+    }
+
+    private func compressVideo() {
+        guard let url = videoInfo.fileURL as URL?,
+              let player = player else {
+            print("Video URL or Player is not available")
+            return
+        }
+
+        let asset = AVURLAsset(url: url)
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: compressionOptions.preset) else {
+            print("Failed to create export session")
+            return
+        }
+
+        exportSession.outputFileType = .mp4
+
+        let panel = NSSavePanel()
+        panel.allowedFileTypes = ["mp4"]
+        panel.nameFieldStringValue = "compressed_video.mp4"
+        panel.begin { response in
+            if response == .OK, let exportURL = panel.url {
+                exportSession.outputURL = exportURL
+                exportSession.exportAsynchronously {
+                    if exportSession.status == .completed {
+                        print("Compression completed")
+                    } else if let error = exportSession.error {
+                        print("Failed to compress video: \(error)")
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct CompressionOptions {
+    var preset: String = AVAssetExportPresetMediumQuality
+}
+
+struct CompressionOptionsForm: View {
+    @Binding var options: CompressionOptions
+
+    var body: some View {
+        Form {
+            Picker("Quality", selection: $options.preset) {
+                Text("Low").tag(AVAssetExportPresetLowQuality)
+                Text("Medium").tag(AVAssetExportPresetMediumQuality)
+                Text("High").tag(AVAssetExportPresetHighestQuality)
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding()
         }
     }
 }
