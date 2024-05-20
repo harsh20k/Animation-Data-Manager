@@ -77,41 +77,6 @@ class CouchDBManager: ObservableObject {
         task.resume()
     }
 
-    func fetchAllDocuments(completion: @escaping ([CouchDBDocument]) -> Void) {
-        var request = URLRequest(url: URL(string: "\(couchDBBaseURL)/\(databaseName)/_all_docs?include_docs=true")!)
-        request.httpMethod = "GET"
-        let credentials = "\(username):\(password)".data(using: .utf8)!.base64EncodedString()
-        request.addValue("Basic \(credentials)", forHTTPHeaderField: "Authorization")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error fetching documents: \(error.localizedDescription)")
-                completion([])
-                return
-            }
-            
-            guard let data = data else {
-                print("No data received from CouchDB")
-                completion([])
-                return
-            }
-
-            do {
-                let decoder = JSONDecoder()
-                let fetchResponse = try decoder.decode(CouchDBFetchResponse.self, from: data)
-                let documents = fetchResponse.rows.compactMap { $0.doc }
-                print("Fetched documents: \(documents)") // Detailed logging
-                completion(documents)
-            } catch {
-                print("Error decoding response: \(error.localizedDescription)")
-                if let json = try? JSONSerialization.jsonObject(with: data, options: []) {
-                    print("Received JSON: \(json)") // Detailed logging of raw JSON
-                }
-                completion([])
-            }
-        }
-        task.resume()
-    }
 }
 
 struct VideoInfo: Identifiable, Codable {

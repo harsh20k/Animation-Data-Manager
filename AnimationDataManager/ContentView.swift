@@ -23,18 +23,6 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            HStack {
-                Spacer()
-                Button(action: exportCSV) {
-                    Image(systemName: "square.and.arrow.up")
-                        .frame(width: 20, height: 20)
-                        .foregroundColor(.blue)
-                }
-                .buttonStyle(PlainButtonStyle())
-                .padding(5)
-
-            }
-            .frame(maxWidth: .infinity, alignment: .trailing)
             
             HStack {
                 VideoUploadView(
@@ -97,12 +85,6 @@ struct ContentView: View {
         .alert(isPresented: $showAlert) {
             Alert(title: Text("Notification"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
         }
-        .sheet(isPresented: $showShareSheet, content: {
-            ShareSheet(activityItems: [csvData])
-        })
-        .sheet(isPresented: $showCSVDataView, content: {
-            CSVDataView(csvData: csvData, showCSVDataView: $showCSVDataView)
-        })
     }
 
     private func playVideos() {
@@ -112,29 +94,6 @@ struct ContentView: View {
         player2?.play()
     }
 
-    private func exportCSV() {
-        couchDBManager.fetchAllDocuments { documents in
-            let csvString = self.generateCSV(from: documents)
-            DispatchQueue.main.async {
-                self.csvData = csvString
-                self.showCSVDataView = true
-            }
-        }
-    }
-
-    private func generateCSV(from documents: [CouchDBDocument]) -> String {
-        var csvText = "ID,FileName,Duration,FPS,Resolution,Codec,FileSize,IsEdited\n"
-
-        for document in documents {
-            let videoInfo1 = document.video1
-            let videoInfo2 = document.video2
-
-            csvText += "\(document.id),\(videoInfo1.fileName),\(videoInfo1.duration),\(videoInfo1.fps),\(videoInfo1.resolution),\(videoInfo1.codec),\(videoInfo1.fileSize),\(videoInfo1.isEdited)\n"
-            csvText += "\(document.id),\(videoInfo2.fileName),\(videoInfo2.duration),\(videoInfo2.fps),\(videoInfo2.resolution),\(videoInfo2.codec),\(videoInfo2.fileSize),\(videoInfo2.isEdited)\n"
-        }
-
-        return csvText
-    }
 
     private func uploadVideos() {
         guard let fileURL1 = selectedFileURL1, let fileURL2 = selectedFileURL2 else {
