@@ -1,14 +1,9 @@
-//
-//  CouchDBManager.swift
-//  AnimationDataManager
-//
-//  Created by harsh  on 16/05/24.
-//
-
 import Foundation
 
 class CouchDBManager: ObservableObject {
     static let shared = CouchDBManager()
+    @Published var showAlert = false
+    @Published var alertMessage = ""
     private let databaseName = "mydatabase"
     private let couchDBBaseURL = "http://127.0.0.1:5984"
     private let username = "admin"

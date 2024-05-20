@@ -18,6 +18,10 @@
 		3AE9CB6F2BF6300200874353 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3AE9CB6E2BF6300200874353 /* Preview Assets.xcassets */; };
 		3AE9CB762BF6302300874353 /* CouchDBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE9CB752BF6302300874353 /* CouchDBManager.swift */; };
 		3AE9CB7D2BF6ABD200874353 /* VideoPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AE9CB7C2BF6ABD200874353 /* VideoPreviewView.swift */; };
+		3AFDC52F2BFBCCA0005EE4C1 /* VideoListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC52E2BFBCCA0005EE4C1 /* VideoListView.swift */; };
+		3AFDC5312BFBD5A2005EE4C1 /* VideoUploadSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC5302BFBD5A2005EE4C1 /* VideoUploadSection.swift */; };
+		3AFDC5332BFBD5C1005EE4C1 /* VideoControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC5322BFBD5C1005EE4C1 /* VideoControls.swift */; };
+		3AFDC5352BFBD5EB005EE4C1 /* UploadProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AFDC5342BFBD5EB005EE4C1 /* UploadProgressView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +40,10 @@
 		3AE9CB752BF6302300874353 /* CouchDBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CouchDBManager.swift; sourceTree = "<group>"; };
 		3AE9CB792BF638C000874353 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		3AE9CB7C2BF6ABD200874353 /* VideoPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPreviewView.swift; sourceTree = "<group>"; };
+		3AFDC52E2BFBCCA0005EE4C1 /* VideoListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoListView.swift; sourceTree = "<group>"; };
+		3AFDC5302BFBD5A2005EE4C1 /* VideoUploadSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoUploadSection.swift; sourceTree = "<group>"; };
+		3AFDC5322BFBD5C1005EE4C1 /* VideoControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoControls.swift; sourceTree = "<group>"; };
+		3AFDC5342BFBD5EB005EE4C1 /* UploadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgressView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +99,10 @@
 				3ADE80942BF7815900F20391 /* PrettyToggleStyle.swift */,
 				3A68D56B2BF88B6100AFCA25 /* Dummy.md */,
 				3A1A67D02BFBB10900DD2F13 /* VideoDetailsView.swift */,
+				3AFDC52E2BFBCCA0005EE4C1 /* VideoListView.swift */,
+				3AFDC5302BFBD5A2005EE4C1 /* VideoUploadSection.swift */,
+				3AFDC5322BFBD5C1005EE4C1 /* VideoControls.swift */,
+				3AFDC5342BFBD5EB005EE4C1 /* UploadProgressView.swift */,
 			);
 			path = AnimationDataManager;
 			sourceTree = "<group>";
@@ -175,9 +187,13 @@
 			files = (
 				3AE9CB762BF6302300874353 /* CouchDBManager.swift in Sources */,
 				3A1A67D12BFBB10900DD2F13 /* VideoDetailsView.swift in Sources */,
+				3AFDC5312BFBD5A2005EE4C1 /* VideoUploadSection.swift in Sources */,
 				3AE9CB7D2BF6ABD200874353 /* VideoPreviewView.swift in Sources */,
+				3AFDC5332BFBD5C1005EE4C1 /* VideoControls.swift in Sources */,
 				3AE9CB692BF6300100874353 /* ContentView.swift in Sources */,
 				3AE9CB672BF6300100874353 /* AnimationDataManagerApp.swift in Sources */,
+				3AFDC52F2BFBCCA0005EE4C1 /* VideoListView.swift in Sources */,
+				3AFDC5352BFBD5EB005EE4C1 /* UploadProgressView.swift in Sources */,
 				3ADE80932BF76E3B00F20391 /* VideoUploadView.swift in Sources */,
 				3ADE80952BF7815900F20391 /* PrettyToggleStyle.swift in Sources */,
 				3ADE808F2BF742BB00F20391 /* CustomDivider.swift in Sources */,

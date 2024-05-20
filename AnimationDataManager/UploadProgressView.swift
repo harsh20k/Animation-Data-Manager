@@ -1,8 +1,15 @@
-//
-//  UploadProgressView.swift
-//  AnimationDataManager
-//
-//  Created by harsh  on 21/05/24.
-//
+import SwiftUI
 
-import Foundation
+struct UploadProgressView: View {
+    @Binding var uploadProgress: Double
+
+    var body: some View {
+        VStack {
+            ProgressView(value: uploadProgress, total: 1.0)
+                .progressViewStyle(LinearProgressViewStyle())
+                .padding()
+            Text("Uploading... \(Int(uploadProgress * 100))%")
+        }
+        .padding()
+    }
+}

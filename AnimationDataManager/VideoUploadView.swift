@@ -1,10 +1,3 @@
-//
-//  VideoUploadView.swift
-//  AnimationDataManager
-//
-//  Created by harsh  on 17/05/24.
-//
-
 import SwiftUI
 import AVKit
 
@@ -136,5 +129,18 @@ struct VideoUploadView: View {
                 break
             }
         }
+    }
+}
+
+extension FourCharCode {
+    var fourCharCodeString: String {
+        let bytes: [CChar] = [
+            CChar((self >> 24) & 0xFF),
+            CChar((self >> 16) & 0xFF),
+            CChar((self >> 8) & 0xFF),
+            CChar(self & 0xFF),
+            0
+        ]
+        return String(cString: bytes)
     }
 }
