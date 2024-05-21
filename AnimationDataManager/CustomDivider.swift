@@ -74,3 +74,57 @@ struct CustomButtonStyle: ButtonStyle {
 }
 
 
+
+struct NextPageButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Next Page")
+        }
+        .buttonStyle(CustomButtonStyle(color: .orange))
+    }
+}
+
+
+struct BackButton: View {
+    @Binding var navigateBack: Bool
+
+    var body: some View {
+        HStack {
+            Button(action: {
+                withAnimation {
+                    navigateBack = false
+                }
+            }) {
+                Text("Back")
+            }
+            .buttonStyle(CustomButtonStyle(color: .orange))
+            Spacer()
+        }
+        .padding()
+    }
+}
+
+struct CaptureButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Capture Thumbnail")
+        }
+        .buttonStyle(CustomButtonStyle(color: .cyan))
+        .frame(width: 250)
+    }
+}
+
+struct UploadButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("Upload")
+        }
+        .buttonStyle(CustomButtonStyle(color: .blue))
+    }
+}

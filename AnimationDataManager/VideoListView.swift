@@ -1,15 +1,20 @@
 import SwiftUI
 import AVKit
 
+
 struct VideoListView: View {
     @Binding var videoInfo: VideoInfo?
     @Binding var navigateBack: Bool
     @State private var navigateToNextPage = false
-    @State private var thumbnailImage: NSImage?
+//    @State private var thumbnailImage: NSImage?
+    
     @State private var player: AVPlayer?
     @State private var compressionOptions = CompressionOptions()
     
+    
     @EnvironmentObject var selectedFileURLs :SelectedFileURLs
+    @EnvironmentObject var videoCompressedPreview :VideoCompressedPreview
+    @EnvironmentObject var capturedThumbnailClass :CapturedThumbnailClass
 
 
     var body: some View {
@@ -20,7 +25,7 @@ struct VideoListView: View {
                 VStack {
                     BackButton(navigateBack: $navigateBack)
                     HStack{
-                        VideoList(videoInfo: videoInfo!, thumbnailImage: $thumbnailImage, player: $player)
+                        VideoList(videoInfo: videoInfo!, thumbnailImage: $capturedThumbnailClass.thumb, player: $player)
                         Spacer()
                         CompressionSection(videoInfo: videoInfo!, compressionOptions: $compressionOptions, player: $player)
                             .frame(width: 250)
@@ -38,7 +43,52 @@ struct VideoListView: View {
     }
 
     private func uploadVideos() {
-        // Implement the upload logic here
+        guard let videoInfo1 = videoInfo else {
+            print("Video info is not available")
+            return
+        }
+        
+        let videoInfo2 = selectedFileURLs.selectedFileURL2.map {
+            VideoInfo(
+                fileURL: $0,
+                fileName: $0.lastPathComponent,
+                duration: 0,
+                fps: 0,
+                resolution: "",
+                codec: "",
+                fileSize: 0,
+                isEdited: false
+            )
+        }
+        
+        guard let videoInfo2 = videoInfo2 else {
+            print("Second video info is not available")
+            return
+        }
+
+        guard let thumbnailData = capturedThumbnailClass.thumb?.tiffRepresentation else {
+            print("Thumbnail data is not available")
+            return
+        }
+
+        guard let compressedVideoData = videoCompressedPreview.compressedVideoData else {
+            print("Compressed video data is not available")
+            return
+        }
+
+        CouchDBManager.shared.uploadVideoPair(
+            videoInfo1: videoInfo1,
+            videoInfo2: videoInfo2,
+            thumbnailData: thumbnailData,
+            compressedVideoData: compressedVideoData
+        ) { success, errorMessage in
+            DispatchQueue.main.async {
+                CouchDBManager.shared.showAlert = true
+                CouchDBManager.shared.alertMessage = success ? "Videos uploaded successfully" : "Failed to upload videos: \(errorMessage ?? "Unknown error")"
+            }
+        } progressHandler: { bytesUploaded, totalBytes in
+            // Handle upload progress if needed
+        }
     }
 }
 
@@ -94,7 +144,6 @@ struct VideoList: View {
 
     private func downloadThumbnail() {
         guard let thumbnail = thumbnailImage else { return }
-
         let panel = NSSavePanel()
         panel.allowedFileTypes = ["jpg"]
         panel.nameFieldStringValue = "thumbnail.jpg"
@@ -153,33 +202,11 @@ struct ThumbnailView: View {
     }
 }
 
-struct CaptureButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text("Capture Thumbnail")
-        }
-        .buttonStyle(CustomButtonStyle(color: .cyan))
-        .frame(width: 250)
-    }
-}
-
-struct UploadButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text("Upload")
-        }
-        .buttonStyle(CustomButtonStyle(color: .blue))
-    }
-}
-
 struct CompressionSection: View {
     var videoInfo: VideoInfo
     @Binding var compressionOptions: CompressionOptions
     @Binding var player: AVPlayer?
+    @EnvironmentObject var videoCompressedPreview: VideoCompressedPreview
 
     var body: some View {
         VStack {
@@ -215,52 +242,26 @@ struct CompressionSection: View {
         }
 
         exportSession.outputFileType = .mp4
+        
+        let tempDirectory = FileManager.default.temporaryDirectory
+        let tempFileURL = tempDirectory.appendingPathComponent("lskdjfslsd23djf.mp4")
 
-        let panel = NSSavePanel()
-        panel.allowedFileTypes = ["mp4"]
-        panel.nameFieldStringValue = "compressed_video.mp4"
-        panel.begin { response in
-            if response == .OK, let exportURL = panel.url {
-                exportSession.outputURL = exportURL
-                exportSession.exportAsynchronously {
-                    if exportSession.status == .completed {
-                        print("Compression completed")
-                    } else if let error = exportSession.error {
-                        print("Failed to compress video: \(error)")
+
+        exportSession.outputURL = tempFileURL
+        exportSession.exportAsynchronously {
+            if exportSession.status == .completed {
+                do {
+                    let compressedData = try Data(contentsOf: tempFileURL)
+                    DispatchQueue.main.async {
+                        self.videoCompressedPreview.compressedVideoData = compressedData
                     }
+                    print("Compression completed")
+                } catch {
+                    print("Failed to read compressed video data: \(error)")
                 }
+            } else if let error = exportSession.error {
+                print("Failed to compress video: \(error)")
             }
         }
-    }
-}
-
-struct NextPageButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text("Next Page")
-        }
-        .buttonStyle(CustomButtonStyle(color: .orange))
-    }
-}
-
-
-struct BackButton: View {
-    @Binding var navigateBack: Bool
-
-    var body: some View {
-        HStack {
-            Button(action: {
-                withAnimation {
-                    navigateBack = false
-                }
-            }) {
-                Text("Back")
-            }
-            .buttonStyle(CustomButtonStyle(color: .orange))
-            Spacer()
-        }
-        .padding()
     }
 }

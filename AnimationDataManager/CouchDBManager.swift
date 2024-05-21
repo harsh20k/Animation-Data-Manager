@@ -1,4 +1,5 @@
 import Foundation
+import AVKit
 
 class CouchDBManager: ObservableObject {
     static let shared = CouchDBManager()
@@ -9,10 +10,11 @@ class CouchDBManager: ObservableObject {
     private let username = "admin"
     private let password = "adminadmin"
 
-    func uploadVideoPair(videoInfo1: VideoInfo, videoInfo2: VideoInfo, completion: @escaping (Bool, String?) -> Void, progressHandler: @escaping (Int64, Int64) -> Void) {
+    func uploadVideoPair(videoInfo1: VideoInfo, videoInfo2: VideoInfo, thumbnailData: Data, compressedVideoData: Data, completion: @escaping (Bool, String?) -> Void, progressHandler: @escaping (Int64, Int64) -> Void) {
         let document = CouchDBDocument(video1: videoInfo1, video2: videoInfo2)
         guard let documentData = try? JSONEncoder().encode(document) else {
-            completion(false, nil)
+            print("Error encoding document")
+            completion(false, "Error encoding document")
             return
         }
 
@@ -23,29 +25,75 @@ class CouchDBManager: ObservableObject {
         request.addValue("Basic \(credentials)", forHTTPHeaderField: "Authorization")
         request.httpBody = documentData
 
+        print("Uploading document metadata to CouchDB")
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                completion(false, nil)
+            if let error = error {
+                print("Error uploading document metadata: \(error)")
+                completion(false, error.localizedDescription)
                 return
             }
 
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201,
-               let responseData = try? JSONDecoder().decode(CouchDBCreateResponse.self, from: data) {
-                self.uploadVideoAttachments(documentID: responseData.id, videoInfo1: videoInfo1, videoInfo2: videoInfo2, rev: responseData.rev, completion: completion, progressHandler: progressHandler)
+            guard let data = data else {
+                print("No data received from CouchDB")
+                completion(false, "No data received from CouchDB")
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Response status code: \(httpResponse.statusCode)")
+            }
+
+            if let responseData = try? JSONDecoder().decode(CouchDBCreateResponse.self, from: data) {
+                print("Document metadata uploaded successfully. Document ID: \(responseData.id), Rev: \(responseData.rev)")
+                self.uploadVideoAttachments(documentID: responseData.id, videoInfo1: videoInfo1, videoInfo2: videoInfo2, rev: responseData.rev, thumbnailData: thumbnailData, compressedVideoData: compressedVideoData, completion: completion, progressHandler: progressHandler)
             } else {
-                completion(false, nil)
+                print("Error decoding response data")
+                completion(false, "Error decoding response data")
             }
         }
         task.resume()
     }
 
-    private func uploadVideoAttachments(documentID: String, videoInfo1: VideoInfo, videoInfo2: VideoInfo, rev: String, completion: @escaping (Bool, String?) -> Void, progressHandler: @escaping (Int64, Int64) -> Void) {
+    private func uploadVideoAttachments(documentID: String, videoInfo1: VideoInfo, videoInfo2: VideoInfo, rev: String, thumbnailData: Data, compressedVideoData: Data, completion: @escaping (Bool, String?) -> Void, progressHandler: @escaping (Int64, Int64) -> Void) {
+        print("Uploading first video attachment")
         uploadVideoAttachment(documentID: documentID, rev: rev, videoInfo: videoInfo1, progressHandler: progressHandler) { success, newRev in
             guard success, let newRev = newRev else {
-                completion(false, nil)
+                print("Failed to upload first video attachment")
+                completion(false, "Failed to upload first video attachment")
                 return
             }
-            self.uploadVideoAttachment(documentID: documentID, rev: newRev, videoInfo: videoInfo2, progressHandler: progressHandler, completion: completion)
+            print("First video attachment uploaded. Rev: \(newRev)")
+            
+            print("Uploading second video attachment")
+            self.uploadVideoAttachment(documentID: documentID, rev: newRev, videoInfo: videoInfo2, progressHandler: progressHandler) { success, newRev in
+                guard success, let newRev = newRev else {
+                    print("Failed to upload second video attachment")
+                    completion(false, "Failed to upload second video attachment")
+                    return
+                }
+                print("Second video attachment uploaded. Rev: \(newRev)")
+                
+                print("Uploading thumbnail attachment")
+                self.uploadAttachment(documentID: documentID, rev: newRev, attachmentName: "thumbnail.jpg", attachmentData: thumbnailData, mimeType: "image/jpeg") { success, newRev in
+                    guard success, let newRev = newRev else {
+                        print("Failed to upload thumbnail attachment")
+                        completion(false, "Failed to upload thumbnail attachment")
+                        return
+                    }
+                    print("Thumbnail attachment uploaded. Rev: \(newRev)")
+                    
+                    print("Uploading compressed video attachment")
+                    self.uploadAttachment(documentID: documentID, rev: newRev, attachmentName: "compressed_video.mp4", attachmentData: compressedVideoData, mimeType: "video/mp4") { success, _ in
+                        if success {
+                            print("Compressed video attachment uploaded successfully")
+                            completion(true, nil)
+                        } else {
+                            print("Failed to upload compressed video attachment")
+                            completion(false, "Failed to upload compressed video attachment")
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -56,29 +104,71 @@ class CouchDBManager: ObservableObject {
         let credentials = "\(username):\(password)".data(using: .utf8)!.base64EncodedString()
         request.addValue("Basic \(credentials)", forHTTPHeaderField: "Authorization")
 
+        print("Uploading video attachment: \(videoInfo.fileName)")
         let task = URLSession.shared.uploadTask(with: request, fromFile: videoInfo.fileURL) { data, response, error in
-            guard let data = data, error == nil else {
-                completion(false, nil)
+            if let error = error {
+                print("Error uploading video attachment: \(error)")
+                completion(false, error.localizedDescription)
                 return
             }
 
-            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 201,
-               let responseData = try? JSONDecoder().decode(CouchDBCreateResponse.self, from: data) {
+            guard let data = data else {
+                print("No data received from CouchDB")
+                completion(false, "No data received from CouchDB")
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Response status code: \(httpResponse.statusCode)")
+            }
+
+            if let responseData = try? JSONDecoder().decode(CouchDBCreateResponse.self, from: data) {
+                print("Video attachment uploaded successfully. Rev: \(responseData.rev)")
                 completion(true, responseData.rev)
             } else {
-                completion(false, nil)
+                print("Error decoding response data")
+                completion(false, "Error decoding response data")
             }
         }
         task.resume()
     }
 
-}
+    private func uploadAttachment(documentID: String, rev: String, attachmentName: String, attachmentData: Data, mimeType: String, completion: @escaping (Bool, String?) -> Void) {
+        var request = URLRequest(url: URL(string: "\(couchDBBaseURL)/\(databaseName)/\(documentID)/\(attachmentName)?rev=\(rev)")!)
+        request.httpMethod = "PUT"
+        request.addValue(mimeType, forHTTPHeaderField: "Content-Type")
+        let credentials = "\(username):\(password)".data(using: .utf8)!.base64EncodedString()
+        request.addValue("Basic \(credentials)", forHTTPHeaderField: "Authorization")
+        request.httpBody = attachmentData
 
+        print("Uploading attachment: \(attachmentName)")
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error uploading attachment: \(error)")
+                completion(false, error.localizedDescription)
+                return
+            }
 
-class SelectedFileURLs: ObservableObject {
-    @Published var selectedFileURL1: URL?
-    @Published var selectedFileURL2: URL?
-    
+            guard let data = data else {
+                print("No data received from CouchDB")
+                completion(false, "No data received from CouchDB")
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                print("HTTP Response status code: \(httpResponse.statusCode)")
+            }
+
+            if let responseData = try? JSONDecoder().decode(CouchDBCreateResponse.self, from: data) {
+                print("Attachment uploaded successfully. Rev: \(responseData.rev)")
+                completion(true, responseData.rev)
+            } else {
+                print("Error decoding response data")
+                completion(false, "Error decoding response data")
+            }
+        }
+        task.resume()
+    }
 }
 
 struct VideoInfo: Identifiable, Codable {
@@ -117,4 +207,20 @@ struct CouchDBFetchResponse: Codable {
     struct Row: Codable {
         var doc: CouchDBDocument?
     }
+}
+
+
+//environement
+class SelectedFileURLs: ObservableObject {
+    @Published var selectedFileURL1: URL?
+    @Published var selectedFileURL2: URL?
+    
+}
+//environement thumbnail
+class CapturedThumbnailClass: ObservableObject{
+    @Published var thumb: NSImage?
+}
+//environment compressed video
+class VideoCompressedPreview: ObservableObject {
+    @Published var compressedVideoData: Data?
 }

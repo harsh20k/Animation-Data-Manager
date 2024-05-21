@@ -13,6 +13,8 @@ struct AnimationDataManagerApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(SelectedFileURLs())
+                .environmentObject(CapturedThumbnailClass())
+                .environmentObject(VideoCompressedPreview())
 
         }
     }
