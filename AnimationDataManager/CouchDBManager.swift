@@ -74,6 +74,13 @@ class CouchDBManager: ObservableObject {
 
 }
 
+
+class SelectedFileURLs: ObservableObject {
+    @Published var selectedFileURL1: URL?
+    @Published var selectedFileURL2: URL?
+    
+}
+
 struct VideoInfo: Identifiable, Codable {
     var id = UUID()
     var fileURL: URL

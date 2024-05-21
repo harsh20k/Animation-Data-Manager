@@ -2,25 +2,27 @@ import SwiftUI
 import AVKit
 
 struct VideoListView: View {
-    var videoInfo1: VideoInfo
-    var videoInfo2: VideoInfo
+    @Binding var videoInfo: VideoInfo?
     @Binding var navigateBack: Bool
     @State private var navigateToNextPage = false
     @State private var thumbnailImage: NSImage?
     @State private var player: AVPlayer?
     @State private var compressionOptions = CompressionOptions()
+    
+    @EnvironmentObject var selectedFileURLs :SelectedFileURLs
+
 
     var body: some View {
         VStack {
             if navigateToNextPage {
-                CompressionOptionsView(videoInfo1: videoInfo1,videoInfo2: videoInfo2, navigateBack: $navigateToNextPage)
+                CompressionOptionsView(videoInfo: videoInfo, navigateBack: $navigateToNextPage)
             } else {
                 VStack {
                     BackButton(navigateBack: $navigateBack)
                     HStack{
-                        VideoList(videoInfo1: videoInfo1, videoInfo2: videoInfo2, thumbnailImage: $thumbnailImage, player: $player)
+                        VideoList(videoInfo: videoInfo!, thumbnailImage: $thumbnailImage, player: $player)
                         Spacer()
-                        CompressionSection(videoInfo: videoInfo2, compressionOptions: $compressionOptions, player: $player)
+                        CompressionSection(videoInfo: videoInfo!, compressionOptions: $compressionOptions, player: $player)
                             .frame(width: 250)
                             .padding(50)
 
@@ -43,10 +45,12 @@ struct VideoListView: View {
 
 
 struct VideoList: View {
-    var videoInfo1: VideoInfo
-    var videoInfo2: VideoInfo
+    var videoInfo: VideoInfo
     @Binding var thumbnailImage: NSImage?
     @Binding var player: AVPlayer?
+    
+    @EnvironmentObject var selectedFileURLs :SelectedFileURLs
+
 
     var body: some View {
         HStack {
@@ -62,12 +66,10 @@ struct VideoList: View {
     }
 
     private func getVideoURL() -> URL? {
-        let url = videoInfo1.isEdited ? videoInfo1.fileURL : videoInfo2.fileURL
-        print ("video1 is edited? \(videoInfo1.isEdited)")
-        print ("video2 is edited? \(videoInfo2.isEdited)")
-        print ("v1 URL \(videoInfo2.fileURL) v2 URL \(videoInfo2.fileURL)")
-        print (url)
-        return url
+        print (selectedFileURLs.selectedFileURL1?.absoluteString)
+        print (selectedFileURLs.selectedFileURL2?.absoluteString)
+        print (videoInfo.fileURL)
+        return videoInfo.fileURL
     }
 
     private func captureThumbnail() {

@@ -12,6 +12,8 @@ struct AnimationDataManagerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(SelectedFileURLs())
+
         }
     }
 }

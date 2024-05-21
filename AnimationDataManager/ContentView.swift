@@ -19,20 +19,28 @@ struct ContentView: View {
     @State private var player2: AVPlayer?
     @State private var navigateToNextPage = false
 
+    @EnvironmentObject var selectedFileURLs :SelectedFileURLs
+    
     //test
     var body: some View {
         VStack {
             if navigateToNextPage {
-                VideoListView(
-                    videoInfo1: videoInfo1!,
-                    videoInfo2: videoInfo2!,
-                    navigateBack: $navigateToNextPage
-                )
+                if(isEdited1){
+                    VideoListView(
+                        videoInfo: $videoInfo1,
+                        navigateBack: $navigateToNextPage
+                    )}
+                else{
+                    VideoListView(
+                        videoInfo: $videoInfo2,
+                        navigateBack: $navigateToNextPage
+                    )
+                }
             } else {
                 VStack {
                     HStack {
                         VideoUploadView(
-                            selectedFileURL: $selectedFileURL1,
+                            selectedFileURL: $selectedFileURLs.selectedFileURL1,
                             isEdited: $isEdited1,
                             isLeft: true,
                             videoInfo: $videoInfo1,
@@ -45,7 +53,7 @@ struct ContentView: View {
                         CustomDivider()
 
                         VideoUploadView(
-                            selectedFileURL: $selectedFileURL2,
+                            selectedFileURL: $selectedFileURLs.selectedFileURL2,
                             isEdited: $isEdited2,
                             isLeft: false,
                             videoInfo: $videoInfo2,
@@ -56,7 +64,7 @@ struct ContentView: View {
                         )
                     }
 
-                    if selectedFileURL1 != nil && selectedFileURL2 != nil {
+                    if selectedFileURLs.selectedFileURL1 != nil && selectedFileURLs.selectedFileURL2 != nil {
                         HStack(spacing: 20) {
                             Button(action: playVideos) {
                                 Label("Play", systemImage: "play.circle.fill")
@@ -114,4 +122,8 @@ struct ContentView: View {
         player1 = nil
         player2 = nil
     }
+}
+
+#Preview {
+    ContentView()
 }

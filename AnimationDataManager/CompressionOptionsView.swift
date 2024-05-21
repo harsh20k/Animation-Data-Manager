@@ -2,8 +2,7 @@ import SwiftUI
 import AVKit
 
 struct CompressionOptionsView: View {
-    var videoInfo1: VideoInfo
-    var videoInfo2: VideoInfo
+    var videoInfo: VideoInfo?
     @Binding var navigateBack: Bool
     @State private var compressionOptions = CompressionOptions()
     @State  var player: AVPlayer?
@@ -16,7 +15,7 @@ struct CompressionOptionsView: View {
                     VideoPlayerView(url: url, player: $player)
                 }
             }
-            CompressionSection(videoInfo: videoInfo2, compressionOptions: $compressionOptions, player: $player)
+            CompressionSection(videoInfo: videoInfo!, compressionOptions: $compressionOptions, player: $player)
             Spacer()
             Text("Compression Options Page")
                 .font(.largeTitle)
@@ -26,7 +25,8 @@ struct CompressionOptionsView: View {
     }
 
     private func getVideoURL() -> URL? {
-        let url = videoInfo1.isEdited ? videoInfo1.fileURL : videoInfo2.fileURL
+        let url = videoInfo?.fileURL
+        print ("hello")
         return url
     }
 
