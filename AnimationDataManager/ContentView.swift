@@ -74,11 +74,8 @@ struct ContentView: View {
                                 }
                             }) {
                                 Text("Next")
-                                    .padding()
-                                    .background(Color.blue)
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
                             }
+                            .buttonStyle(CustomButtonStyle(color: .orange))
                         }
                     }
 

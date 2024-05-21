@@ -13,15 +13,22 @@ struct VideoListView: View {
     var body: some View {
         VStack {
             if navigateToNextPage {
-                CompressionOptionsView(videoInfo2: videoInfo2, navigateBack: $navigateToNextPage)
+                CompressionOptionsView(videoInfo1: videoInfo1,videoInfo2: videoInfo2, navigateBack: $navigateToNextPage)
             } else {
                 VStack {
                     BackButton(navigateBack: $navigateBack)
-                    VideoList(videoInfo1: videoInfo1, videoInfo2: videoInfo2, thumbnailImage: $thumbnailImage, player: $player)
-                    Spacer()
-                    CompressionSection(videoInfo: videoInfo2, compressionOptions: $compressionOptions, player: $player)
-                    UploadButton(action: uploadVideos)
-                    NextPageButton(action: { navigateToNextPage = true })
+                    HStack{
+                        VideoList(videoInfo1: videoInfo1, videoInfo2: videoInfo2, thumbnailImage: $thumbnailImage, player: $player)
+                        Spacer()
+                        CompressionSection(videoInfo: videoInfo2, compressionOptions: $compressionOptions, player: $player)
+                            .frame(width: 250)
+                            .padding(50)
+
+                    }
+                    HStack{
+                        UploadButton(action: uploadVideos)
+                        NextPageButton(action: { navigateToNextPage = true })
+                    }
                 }
             }
         }
@@ -33,27 +40,7 @@ struct VideoListView: View {
     }
 }
 
-struct BackButton: View {
-    @Binding var navigateBack: Bool
 
-    var body: some View {
-        HStack {
-            Button(action: {
-                withAnimation {
-                    navigateBack = false
-                }
-            }) {
-                Text("Back")
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
-            Spacer()
-        }
-        .padding()
-    }
-}
 
 struct VideoList: View {
     var videoInfo1: VideoInfo
@@ -62,11 +49,10 @@ struct VideoList: View {
     @Binding var player: AVPlayer?
 
     var body: some View {
-        List {
+        HStack {
             if let url = getVideoURL() {
                 VideoPlayerView(url: url, player: $player)
             }
-
             if let thumbnail = thumbnailImage {
                 ThumbnailView(thumbnail: thumbnail, retryAction: captureThumbnail, downloadAction: downloadThumbnail)
             } else {
@@ -77,6 +63,10 @@ struct VideoList: View {
 
     private func getVideoURL() -> URL? {
         let url = videoInfo1.isEdited ? videoInfo1.fileURL : videoInfo2.fileURL
+        print ("video1 is edited? \(videoInfo1.isEdited)")
+        print ("video2 is edited? \(videoInfo2.isEdited)")
+        print ("v1 URL \(videoInfo2.fileURL) v2 URL \(videoInfo2.fileURL)")
+        print (url)
         return url
     }
 
@@ -124,10 +114,11 @@ struct VideoPlayerView: View {
 
     var body: some View {
         VideoPlayer(player: player)
-            .frame(height: 300)
             .onAppear {
                 player = AVPlayer(url: url)
             }
+            .cornerRadius(10)
+            .shadow(radius: 10)
     }
 }
 
@@ -141,25 +132,22 @@ struct ThumbnailView: View {
             Image(nsImage: thumbnail)
                 .resizable()
                 .scaledToFit()
+                .cornerRadius(5)
+                .shadow(radius: 10)
                 .frame(width: 200, height: 200)
                 .padding()
             HStack {
                 Button(action: retryAction) {
                     Text("Retry Capture")
-                        .padding()
-                        .background(Color.orange)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
                 }
+                .buttonStyle(CustomButtonStyle(color: .indigo))
                 Button(action: downloadAction) {
                     Text("Download Thumbnail")
-                        .padding()
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
                 }
+                .buttonStyle(CustomButtonStyle(color: .indigo))
             }
         }
+        .frame(width: 250)
     }
 }
 
@@ -169,11 +157,9 @@ struct CaptureButton: View {
     var body: some View {
         Button(action: action) {
             Text("Capture Thumbnail")
-                .padding()
-                .background(Color.gray)
-                .foregroundColor(.white)
-                .cornerRadius(10)
         }
+        .buttonStyle(CustomButtonStyle(color: .cyan))
+        .frame(width: 250)
     }
 }
 
@@ -183,11 +169,8 @@ struct UploadButton: View {
     var body: some View {
         Button(action: action) {
             Text("Upload")
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
         }
+        .buttonStyle(CustomButtonStyle(color: .blue))
     }
 }
 
@@ -206,17 +189,14 @@ struct CompressionSection: View {
 
             Button(action: compressVideo) {
                 Text("Compress and Download")
-                    .padding()
-                    .background(Color.orange)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
             }
+            .buttonStyle(CustomButtonStyle(color: .green))
         }
         .padding()
-        .background(Color.gray.opacity(0.1))
+        .background(Color.black.opacity(0.1))
         .cornerRadius(10)
         .shadow(radius: 5)
-        .padding(.top)
+        .padding(30)
     }
 
     private func compressVideo() {
@@ -258,20 +238,27 @@ struct NextPageButton: View {
     var body: some View {
         Button(action: action) {
             Text("Next Page")
-                .padding()
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
         }
+        .buttonStyle(CustomButtonStyle(color: .orange))
     }
 }
 
-struct HelloWorldView: View {
+
+struct BackButton: View {
+    @Binding var navigateBack: Bool
+
     var body: some View {
-        VStack {
-            Text("Hello World")
-                .font(.largeTitle)
-                .padding()
+        HStack {
+            Button(action: {
+                withAnimation {
+                    navigateBack = false
+                }
+            }) {
+                Text("Back")
+            }
+            .buttonStyle(CustomButtonStyle(color: .orange))
+            Spacer()
         }
+        .padding()
     }
 }
