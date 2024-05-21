@@ -19,6 +19,7 @@ struct ContentView: View {
     @State private var player2: AVPlayer?
     @State private var navigateToNextPage = false
 
+    //test
     var body: some View {
         VStack {
             if navigateToNextPage {
