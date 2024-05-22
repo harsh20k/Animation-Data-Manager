@@ -6,8 +6,7 @@ struct VideoListView: View {
     @Binding var videoInfo: VideoInfo?
     @Binding var navigateBack: Bool
     @State private var navigateToNextPage = false
-//    @State private var thumbnailImage: NSImage?
-    
+   
     @State private var player: AVPlayer?
     @State private var compressionOptions = CompressionOptions()
     
@@ -244,7 +243,7 @@ struct CompressionSection: View {
         exportSession.outputFileType = .mp4
         
         let tempDirectory = FileManager.default.temporaryDirectory
-        let tempFileURL = tempDirectory.appendingPathComponent("lskdjfslsd23djf.mp4")
+        let tempFileURL = tempDirectory.appendingPathComponent("lvmdjfslsd23djf.mp4")
 
 
         exportSession.outputURL = tempFileURL

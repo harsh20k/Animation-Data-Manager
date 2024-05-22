@@ -113,6 +113,8 @@ struct ContentView: View {
     }
 
     private func clearSelections() {
+        selectedFileURLs.selectedFileURL1 = nil
+        selectedFileURLs.selectedFileURL2 = nil
         selectedFileURL1 = nil
         selectedFileURL2 = nil
         isEdited1 = false
