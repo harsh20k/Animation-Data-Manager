@@ -60,7 +60,7 @@ struct ContentView: View {
                     if selectedFileURLs.selectedFileURL1 != nil && selectedFileURLs.selectedFileURL2 != nil {
                         HStack(spacing: 20) {
                             Button(action: playVideos) {
-                                Label("Play", systemImage: "play.circle.fill")
+                                Label("Play/Pause", systemImage: "playpause.circle.fill")
                             }
                             .buttonStyle(CustomButtonStyle(color: .green))
                             .padding()
@@ -75,7 +75,7 @@ struct ContentView: View {
                                     navigateToNextPage = true
                                 }
                             }) {
-                                Text("Next")
+                                Label("Next", systemImage: "arrowshape.forward.fill")
                             }
                             .buttonStyle(CustomButtonStyle(color: .orange))
                         }
@@ -99,11 +99,17 @@ struct ContentView: View {
     }
 
     private func playVideos() {
-        player1?.seek(to: .zero)
-        player2?.seek(to: .zero)
-        player1?.play()
-        player2?.play()
+        if let player1 = player1, let player2 = player2 {
+            if player1.timeControlStatus == .playing && player2.timeControlStatus == .playing {
+                player1.pause()
+                player2.pause()
+            } else {
+                player1.play()
+                player2.play()
+            }
+        }
     }
+
 
     private func clearSelections() {
         selectedFileURLs.selectedFileURL1 = nil

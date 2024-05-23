@@ -91,18 +91,14 @@ struct BackButton: View {
     @Binding var navigateBack: Bool
 
     var body: some View {
-        HStack {
             Button(action: {
                 withAnimation {
                     navigateBack = false
                 }
             }) {
-                Text("Back")
+                Label("Back", systemImage: "arrowshape.backward.fill")
             }
             .buttonStyle(CustomButtonStyle(color: .orange))
-            Spacer()
-        }
-        .padding()
     }
 }
 
@@ -113,7 +109,7 @@ struct CaptureButton: View {
         HStack{
             Spacer()
             Button(action: action) {
-                Text("Capture Thumbnail")
+                Label("Capture Thumbnail", systemImage: "camera.fill")
             }
             .buttonStyle(CustomButtonStyle(color: .cyan))
             .frame(width: 250)
@@ -128,7 +124,7 @@ struct UploadButton: View {
     var body: some View {
         HStack{
             Button(action: action) {
-                Text("Upload")
+                Label("Upload", systemImage: "square.and.arrow.up.fill")
             }
             .buttonStyle(CustomButtonStyle(color: .blue))
         }

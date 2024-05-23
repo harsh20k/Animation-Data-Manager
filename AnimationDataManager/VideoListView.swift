@@ -13,6 +13,9 @@ struct VideoListView: View {
     @State private var player1: AVPlayer?
     @State private var player2: AVPlayer?
     @State private var compressionOptions = CompressionOptions()
+    
+    @State private var showUploadAlert = false
+    @State private var alertMessage = ""
 
     var body: some View {
         VStack {
@@ -20,11 +23,10 @@ struct VideoListView: View {
                 CompressionOptionsView(navigateBack: $navigateToNextPage)
             } else {
                 VStack {
-                    BackButton(navigateBack: $navigateBack)
                     HStack {
                         Spacer()
                         VideoListContent(thumbnailImage: $capturedThumbnailClass.thumb, player1: $player1, player2: $player2)
-                            .frame(width:700)
+                            .frame(width: 700)
                         Spacer()
                         CompressionSection(compressionOptions: $compressionOptions, player1: $player1, player2: $player2)
                             .frame(width: 250)
@@ -34,13 +36,22 @@ struct VideoListView: View {
                     }
                     Spacer()
                     HStack {
+                        Spacer()
                         UploadButton(action: uploadVideos)
-//                        NextPageButton(action: { navigateToNextPage = true })
+                        BackButton(navigateBack: $navigateBack)
+                        Spacer()
                     }
                 }
             }
         }
         .padding()
+        .alert(isPresented: $showUploadAlert) {
+            Alert(
+                title: Text("Upload Status"),
+                message: Text(alertMessage),
+                dismissButton: .default(Text("OK"))
+            )
+        }
     }
 
     private func uploadVideos() {
@@ -67,7 +78,6 @@ struct VideoListView: View {
             return
         }
 
-        
         CouchDBManager.shared.uploadVideoPair(
             videoInfo1: videoInfo1,
             videoInfo2: videoInfo2,
@@ -75,8 +85,8 @@ struct VideoListView: View {
             compressedVideoData: compressedVideoData
         ) { success, errorMessage in
             DispatchQueue.main.async {
-                CouchDBManager.shared.showAlert = true
-                CouchDBManager.shared.alertMessage = success ? "Videos uploaded successfully" : "Failed to upload videos: \(errorMessage ?? "Unknown error")"
+                self.showUploadAlert = true
+                self.alertMessage = success ? "Videos uploaded successfully" : "Failed to upload videos: \(errorMessage ?? "Unknown error")"
             }
         } progressHandler: { bytesUploaded, totalBytes in
             // Handle upload progress if needed
@@ -102,7 +112,11 @@ struct VideoListContent: View {
                 ThumbnailView(thumbnail: thumbnail, retryAction: captureThumbnail, downloadAction: downloadThumbnail)
                 Spacer()
             } else {
-                CaptureButton(action: captureThumbnail)
+                VStack{
+                    Spacer()
+                    CaptureButton(action: captureThumbnail)
+                    Spacer()
+                }
             }
         }
     }
@@ -165,7 +179,7 @@ struct CompressionSection: View {
             CompressionOptionsForm(options: $compressionOptions, duration: getVideoInfo()?.duration ?? 0)
 
             Button(action: compressVideo) {
-                Text("Compress & Save")
+                Label("Compress Save", systemImage: "arrow.down.circle.fill")
             }
             .buttonStyle(CustomButtonStyle(color: .green))
         }
@@ -243,6 +257,7 @@ struct ThumbnailView: View {
 
     var body: some View {
         VStack {
+            Spacer()
             Image(nsImage: thumbnail)
                 .resizable()
                 .scaledToFit()
@@ -251,14 +266,15 @@ struct ThumbnailView: View {
                 .frame(width: 300, height: 200)
             HStack {
                 Button(action: retryAction) {
-                    Text("Retry Capture")
+                    Label("Retry Capture", systemImage: "arrow.triangle.2.circlepath.camera.fill")
                 }
                 .buttonStyle(CustomButtonStyle(color: .indigo))
                 Button(action: downloadAction) {
-                    Text("Save")
+                    Label("Save", systemImage: "arrow.down.circle.fill")
                 }
-                .buttonStyle(CustomButtonStyle(color: .indigo))
+                .buttonStyle(CustomButtonStyle(color: .black.opacity(0.7)))
             }
+            Spacer(minLength: 50)
         }
         .frame(width: 300)
     }
