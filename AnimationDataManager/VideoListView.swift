@@ -39,6 +39,9 @@ struct VideoListView: View {
     }
 
     private func uploadVideos() {
+        videoInfos.videoInfo1!.isEdited = editedStatus.isEdited1
+        videoInfos.videoInfo2!.isEdited = editedStatus.isEdited2
+        
         guard let videoInfo1 = videoInfos.videoInfo1 else {
             print("Video info 1 is not available")
             return
@@ -59,6 +62,7 @@ struct VideoListView: View {
             return
         }
 
+        
         CouchDBManager.shared.uploadVideoPair(
             videoInfo1: videoInfo1,
             videoInfo2: videoInfo2,

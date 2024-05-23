@@ -10,6 +10,8 @@ class CouchDBManager: ObservableObject {
     private let username = "admin"
     private let password = "adminadmin"
 
+    
+
     func uploadVideoPair(videoInfo1: VideoInfo, videoInfo2: VideoInfo, thumbnailData: Data, compressedVideoData: Data, completion: @escaping (Bool, String?) -> Void, progressHandler: @escaping (Int64, Int64) -> Void) {
         let document = CouchDBDocument(video1: videoInfo1, video2: videoInfo2)
         guard let documentData = try? JSONEncoder().encode(document) else {
