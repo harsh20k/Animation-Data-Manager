@@ -47,23 +47,23 @@ struct VideoListView: View {
                 }
             }
             .padding()
-            
-            if isUploading {
-                UploadProgressView(showSuccess: $showSuccess)
-                    .frame(width: 100, height: 100)
-                    .background(Color.black.opacity(0.9))
-                    .cornerRadius(10)
-                    .shadow(radius: 10)
-            }
-        }
-        .alert(isPresented: $showUploadAlert) {
-            Alert(
-                title: Text("Upload Status"),
-                message: Text(alertMessage),
-                dismissButton: .default(Text("OK"))
-            )
+        
+        if isUploading {
+            UploadProgressView(showSuccess: $showSuccess)
+                .frame(width: 100, height: 100)
+                .background(Color.black.opacity(0.9))
+                .cornerRadius(10)
+                .shadow(radius: 10)
         }
     }
+    .alert(isPresented: $showUploadAlert) {
+        Alert(
+            title: Text("Upload Status"),
+            message: Text(alertMessage),
+            dismissButton: .default(Text("OK"))
+        )
+    }
+}
 
     private func uploadVideos() {
         videoInfos.videoInfo1!.isEdited = editedStatus.isEdited1
@@ -79,8 +79,8 @@ struct VideoListView: View {
             return
         }
 
-        guard let thumbnailData = capturedThumbnailClass.thumb?.tiffRepresentation else {
-            print("Thumbnail data is not available")
+        guard let thumbnailData = compressThumbnail(image: capturedThumbnailClass.thumb) else {
+            print("Thumbnail data is not available or could not be compressed")
             return
         }
 
@@ -115,6 +115,31 @@ struct VideoListView: View {
         }
     }
 }
+    
+    private func compressThumbnail(image: NSImage?) -> Data? {
+        guard let image = image, let tiffData = image.tiffRepresentation,
+              let bitmapImageRep = NSBitmapImageRep(data: tiffData) else {
+            print("Failed to get bitmap representation of the image")
+            return nil
+        }
+        
+        let properties: [NSBitmapImageRep.PropertyKey: Any] = [.compressionFactor: 0.7]
+        var jpegData = bitmapImageRep.representation(using: .jpeg, properties: properties)
+        
+        print("Initial compression factor: 0.7, Data size: \(jpegData?.count ?? 0) bytes")
+        
+        // If initial compression is larger than maxSize, further reduce quality
+        let maxSize = 1_000_000 // 1MB
+        var compressionFactor = 0.7
+        while let data = jpegData, data.count > maxSize, compressionFactor > 0.1 {
+            compressionFactor -= 0.1
+            jpegData = bitmapImageRep.representation(using: .jpeg, properties: [.compressionFactor: compressionFactor])
+            print("Adjusted compression factor: \(compressionFactor), Data size: \(jpegData?.count ?? 0) bytes")
+        }
+        
+        return jpegData
+    }
+
 
 struct VideoListContent: View {
     @Binding var thumbnailImage: NSImage?
@@ -134,11 +159,7 @@ struct VideoListContent: View {
                 ThumbnailView(thumbnail: thumbnail, retryAction: captureThumbnail, downloadAction: downloadThumbnail)
                 Spacer()
             } else {
-                VStack{
-                    Spacer()
-                    CaptureButton(action: captureThumbnail)
-                    Spacer()
-                }
+                CaptureButton(action: captureThumbnail)
             }
         }
     }
@@ -160,11 +181,41 @@ struct VideoListContent: View {
         do {
             let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
             let image = NSImage(cgImage: cgImage, size: .zero)
-            thumbnailImage = image
-            print("Thumbnail captured successfully")
+            
+            // Compress the thumbnail
+            if let compressedThumbnail = compressThumbnail(image: image) {
+                thumbnailImage = NSImage(data: compressedThumbnail)
+                print("Thumbnail captured and compressed successfully")
+            } else {
+                print("Failed to compress thumbnail")
+            }
         } catch {
             print("Failed to capture thumbnail: \(error)")
         }
+    }
+    
+    private func compressThumbnail(image: NSImage) -> Data? {
+        guard let tiffData = image.tiffRepresentation,
+              let bitmapImageRep = NSBitmapImageRep(data: tiffData) else {
+            print("Failed to get bitmap representation of the image")
+            return nil
+        }
+        
+        let properties: [NSBitmapImageRep.PropertyKey: Any] = [.compressionFactor: 0.7]
+        var jpegData = bitmapImageRep.representation(using: .jpeg, properties: properties)
+        
+        print("Initial compression factor: 0.7, Data size: \(jpegData?.count ?? 0) bytes")
+        
+        // If initial compression is larger than maxSize, further reduce quality
+        let maxSize = 1_000_000 // 1MB
+        var compressionFactor = 0.7
+        while let data = jpegData, data.count > maxSize, compressionFactor > 0.1 {
+            compressionFactor -= 0.1
+            jpegData = bitmapImageRep.representation(using: .jpeg, properties: [.compressionFactor: compressionFactor])
+            print("Adjusted compression factor: \(compressionFactor), Data size: \(jpegData?.count ?? 0) bytes")
+        }
+        
+        return jpegData
     }
 
     private func downloadThumbnail() {
@@ -194,7 +245,7 @@ struct CompressionSection: View {
 
     var body: some View {
         VStack {
-            Text("Video Compression Options")
+            Text("Data Saving")
                 .font(.headline)
                 .padding(.bottom)
 
