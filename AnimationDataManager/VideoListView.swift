@@ -50,8 +50,8 @@ struct VideoListView: View {
             
             if isUploading {
                 UploadProgressView(showSuccess: $showSuccess)
-                    .frame(width: 200, height: 200)
-                    .background(Color.white)
+                    .frame(width: 100, height: 100)
+                    .background(Color.black.opacity(0.9))
                     .cornerRadius(10)
                     .shadow(radius: 10)
             }
@@ -231,6 +231,7 @@ struct CompressionSection: View {
         let panel = NSSavePanel()
         panel.allowedFileTypes = ["mp4"]
         panel.nameFieldStringValue = "compressed_video.mp4"
+        panel.directoryURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
         panel.begin { response in
             if response == .OK, let exportURL = panel.url {
                 exportSession.outputURL = exportURL
@@ -296,6 +297,7 @@ struct ThumbnailView: View {
                 }
                 .buttonStyle(CustomButtonStyle(color: .black.opacity(0.7)))
             }
+            Spacer()
         }
         .frame(width: 300)
     }
@@ -303,7 +305,8 @@ struct ThumbnailView: View {
 
 struct UploadProgressView: View {
     @Binding var showSuccess: Bool
-    
+    @State private var rotateAnimation = false
+
     var body: some View {
         VStack {
             if showSuccess {
@@ -315,16 +318,28 @@ struct UploadProgressView: View {
                     .font(.headline)
                     .foregroundColor(.green)
             } else {
-                Image(systemName: "arrow.up.circle.fill")
-                    .resizable()
-                    .frame(width: 50, height: 50)
-                    .foregroundColor(.blue)
-                    .rotationEffect(.degrees(showSuccess ? 0 : 360))
-                    .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
+                ZStack {
+                    Circle()
+                        .trim(from: 0.0, to: 0.5)
+                        .stroke(lineWidth: 2)
+                        .foregroundColor(.blue)
+                        .rotationEffect(.degrees(rotateAnimation ? 360 : 0))
+                        .frame(width: 38, height: 38)
+                        .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
+                        .onAppear {
+                            rotateAnimation = true
+                        }
+                    
+                    Image(systemName: "square.and.arrow.up.circle.fill")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                        .foregroundColor(.blue)
+                }
                 Text("Uploading...")
                     .font(.headline)
             }
         }
         .padding()
-    }
+        .background(Color.black.opacity(0.9))
+        .cornerRadius(10)    }
 }
