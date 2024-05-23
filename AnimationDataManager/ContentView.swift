@@ -3,36 +3,29 @@ import AVKit
 
 struct ContentView: View {
     @ObservedObject private var couchDBManager = CouchDBManager.shared
-    @State private var selectedFileURL1: URL?
-    @State private var selectedFileURL2: URL?
-    @State private var isEdited1: Bool = false
-    @State private var isEdited2: Bool = false
+    @EnvironmentObject var selectedFileURLs: SelectedFileURLs
+    @EnvironmentObject var editedStatus: EditedStatus
+    @EnvironmentObject var videoInfos: VideoInfos
+
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isUploading = false
     @State private var uploadProgress: Double = 0.0
-    @State private var videoInfo1: VideoInfo?
-    @State private var videoInfo2: VideoInfo?
     @State private var showingFilePicker1 = false
     @State private var showingFilePicker2 = false
     @State private var player1: AVPlayer?
     @State private var player2: AVPlayer?
     @State private var navigateToNextPage = false
 
-    @EnvironmentObject var selectedFileURLs :SelectedFileURLs
-    
-    //test
     var body: some View {
         VStack {
             if navigateToNextPage {
-                if(isEdited1){
+                if editedStatus.isEdited1 {
                     VideoListView(
-                        videoInfo: $videoInfo1,
                         navigateBack: $navigateToNextPage
-                    )}
-                else{
+                    )
+                } else {
                     VideoListView(
-                        videoInfo: $videoInfo2,
                         navigateBack: $navigateToNextPage
                     )
                 }
@@ -41,26 +34,26 @@ struct ContentView: View {
                     HStack {
                         VideoUploadView(
                             selectedFileURL: $selectedFileURLs.selectedFileURL1,
-                            isEdited: $isEdited1,
+                            isEdited: $editedStatus.isEdited1,
                             isLeft: true,
-                            videoInfo: $videoInfo1,
+                            videoInfo: $videoInfos.videoInfo1,
                             showingFilePicker: $showingFilePicker1,
                             player: $player1,
                             buttonText: "First Video",
-                            resetOtherToggle: { isEdited2 = false }
+                            resetOtherToggle: { editedStatus.isEdited2 = false }
                         )
-                        
+
                         CustomDivider()
 
                         VideoUploadView(
                             selectedFileURL: $selectedFileURLs.selectedFileURL2,
-                            isEdited: $isEdited2,
+                            isEdited: $editedStatus.isEdited2,
                             isLeft: false,
-                            videoInfo: $videoInfo2,
+                            videoInfo: $videoInfos.videoInfo2,
                             showingFilePicker: $showingFilePicker2,
                             player: $player2,
                             buttonText: "Second Video",
-                            resetOtherToggle: { isEdited1 = false }
+                            resetOtherToggle: { editedStatus.isEdited1 = false }
                         )
                     }
 
@@ -115,17 +108,11 @@ struct ContentView: View {
     private func clearSelections() {
         selectedFileURLs.selectedFileURL1 = nil
         selectedFileURLs.selectedFileURL2 = nil
-        selectedFileURL1 = nil
-        selectedFileURL2 = nil
-        isEdited1 = false
-        isEdited2 = false
-        videoInfo1 = nil
-        videoInfo2 = nil
+        editedStatus.isEdited1 = false
+        editedStatus.isEdited2 = false
+        videoInfos.videoInfo1 = nil
+        videoInfos.videoInfo2 = nil
         player1 = nil
         player2 = nil
     }
-}
-
-#Preview {
-    ContentView()
 }

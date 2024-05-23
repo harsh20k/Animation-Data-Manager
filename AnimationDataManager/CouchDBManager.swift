@@ -224,3 +224,13 @@ class CapturedThumbnailClass: ObservableObject{
 class VideoCompressedPreview: ObservableObject {
     @Published var compressedVideoData: Data?
 }
+
+class EditedStatus: ObservableObject {
+    @Published var isEdited1: Bool = false
+    @Published var isEdited2: Bool = false
+}
+
+class VideoInfos: ObservableObject {
+    @Published var videoInfo1: VideoInfo?
+    @Published var videoInfo2: VideoInfo?
+}
