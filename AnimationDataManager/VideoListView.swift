@@ -22,12 +22,17 @@ struct VideoListView: View {
                 VStack {
                     BackButton(navigateBack: $navigateBack)
                     HStack {
+                        Spacer()
                         VideoListContent(thumbnailImage: $capturedThumbnailClass.thumb, player1: $player1, player2: $player2)
+                            .frame(width:700)
                         Spacer()
                         CompressionSection(compressionOptions: $compressionOptions, player1: $player1, player2: $player2)
                             .frame(width: 250)
-                            .padding(50)
+                            .shadow(radius: 100)
+                            .padding(70)
+                        Spacer()
                     }
+                    Spacer()
                     HStack {
                         UploadButton(action: uploadVideos)
 //                        NextPageButton(action: { navigateToNextPage = true })
@@ -91,9 +96,11 @@ struct VideoListContent: View {
         HStack {
             if let url = getVideoURL() {
                 VideoPlayerView(url: url, player: editedStatus.isEdited1 ? $player1 : $player2)
+                Spacer()
             }
             if let thumbnail = thumbnailImage {
                 ThumbnailView(thumbnail: thumbnail, retryAction: captureThumbnail, downloadAction: downloadThumbnail)
+                Spacer()
             } else {
                 CaptureButton(action: captureThumbnail)
             }
@@ -158,7 +165,7 @@ struct CompressionSection: View {
             CompressionOptionsForm(options: $compressionOptions, duration: getVideoInfo()?.duration ?? 0)
 
             Button(action: compressVideo) {
-                Text("Compress and Download")
+                Text("Compress & Save")
             }
             .buttonStyle(CustomButtonStyle(color: .green))
         }
@@ -241,19 +248,18 @@ struct ThumbnailView: View {
                 .scaledToFit()
                 .cornerRadius(5)
                 .shadow(radius: 10)
-                .frame(width: 200, height: 200)
-                .padding()
+                .frame(width: 300, height: 200)
             HStack {
                 Button(action: retryAction) {
                     Text("Retry Capture")
                 }
                 .buttonStyle(CustomButtonStyle(color: .indigo))
                 Button(action: downloadAction) {
-                    Text("Download Thumbnail")
+                    Text("Save")
                 }
                 .buttonStyle(CustomButtonStyle(color: .indigo))
             }
         }
-        .frame(width: 250)
+        .frame(width: 300)
     }
 }

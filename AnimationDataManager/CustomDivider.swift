@@ -110,11 +110,15 @@ struct CaptureButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            Text("Capture Thumbnail")
+        HStack{
+            Spacer()
+            Button(action: action) {
+                Text("Capture Thumbnail")
+            }
+            .buttonStyle(CustomButtonStyle(color: .cyan))
+            .frame(width: 250)
+            Spacer()
         }
-        .buttonStyle(CustomButtonStyle(color: .cyan))
-        .frame(width: 250)
     }
 }
 
@@ -122,9 +126,12 @@ struct UploadButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            Text("Upload")
+        HStack{
+            Button(action: action) {
+                Text("Upload")
+            }
+            .buttonStyle(CustomButtonStyle(color: .blue))
         }
-        .buttonStyle(CustomButtonStyle(color: .blue))
+        .padding()
     }
 }
