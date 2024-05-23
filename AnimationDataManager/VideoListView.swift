@@ -16,35 +16,46 @@ struct VideoListView: View {
     
     @State private var showUploadAlert = false
     @State private var alertMessage = ""
+    @State private var isUploading = false
+    @State private var showSuccess = false
 
     var body: some View {
-        VStack {
-            if navigateToNextPage {
-                CompressionOptionsView(navigateBack: $navigateToNextPage)
-            } else {
-                VStack {
-                    HStack {
+        ZStack {
+            VStack {
+                if navigateToNextPage {
+                    CompressionOptionsView(navigateBack: $navigateToNextPage)
+                } else {
+                    VStack {
+                        HStack {
+                            Spacer()
+                            VideoListContent(thumbnailImage: $capturedThumbnailClass.thumb, player1: $player1, player2: $player2)
+                                .frame(width: 700)
+                            Spacer()
+                            CompressionSection(compressionOptions: $compressionOptions, player1: $player1, player2: $player2)
+                                .frame(width: 250)
+                                .shadow(radius: 100)
+                                .padding(70)
+                            Spacer()
+                        }
                         Spacer()
-                        VideoListContent(thumbnailImage: $capturedThumbnailClass.thumb, player1: $player1, player2: $player2)
-                            .frame(width: 700)
-                        Spacer()
-                        CompressionSection(compressionOptions: $compressionOptions, player1: $player1, player2: $player2)
-                            .frame(width: 250)
-                            .shadow(radius: 100)
-                            .padding(70)
-                        Spacer()
-                    }
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        UploadButton(action: uploadVideos)
-                        BackButton(navigateBack: $navigateBack)
-                        Spacer()
+                        HStack {
+                            Spacer()
+                            UploadButton(action: uploadVideos)
+                            BackButton(navigateBack: $navigateBack)
+                            Spacer()                        }
                     }
                 }
             }
+            .padding()
+            
+            if isUploading {
+                UploadProgressView(showSuccess: $showSuccess)
+                    .frame(width: 200, height: 200)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 10)
+            }
         }
-        .padding()
         .alert(isPresented: $showUploadAlert) {
             Alert(
                 title: Text("Upload Status"),
@@ -78,6 +89,9 @@ struct VideoListView: View {
             return
         }
 
+        isUploading = true
+        showSuccess = false
+        
         CouchDBManager.shared.uploadVideoPair(
             videoInfo1: videoInfo1,
             videoInfo2: videoInfo2,
@@ -85,8 +99,16 @@ struct VideoListView: View {
             compressedVideoData: compressedVideoData
         ) { success, errorMessage in
             DispatchQueue.main.async {
-                self.showUploadAlert = true
+                self.isUploading = false
+                self.showSuccess = success
                 self.alertMessage = success ? "Videos uploaded successfully" : "Failed to upload videos: \(errorMessage ?? "Unknown error")"
+                self.showUploadAlert = !success
+                
+                if success {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.showSuccess = false
+                    }
+                }
             }
         } progressHandler: { bytesUploaded, totalBytes in
             // Handle upload progress if needed
@@ -191,45 +213,45 @@ struct CompressionSection: View {
     }
 
     private func compressVideo() {
-            guard let videoInfo = editedStatus.isEdited1 ? videoInfos.videoInfo1 : videoInfos.videoInfo2,
-                  let url = videoInfo.fileURL as URL?,
-                  let player = editedStatus.isEdited1 ? player1 : player2 else {
-                print("Video URL or Player is not available")
-                return
-            }
+        guard let videoInfo = editedStatus.isEdited1 ? videoInfos.videoInfo1 : videoInfos.videoInfo2,
+              let url = videoInfo.fileURL as URL?,
+              let player = editedStatus.isEdited1 ? player1 : player2 else {
+            print("Video URL or Player is not available")
+            return
+        }
 
-            let asset = AVURLAsset(url: url)
-            guard let exportSession = AVAssetExportSession(asset: asset, presetName: compressionOptions.preset) else {
-                print("Failed to create export session")
-                return
-            }
+        let asset = AVURLAsset(url: url)
+        guard let exportSession = AVAssetExportSession(asset: asset, presetName: compressionOptions.preset) else {
+            print("Failed to create export session")
+            return
+        }
 
-            exportSession.outputFileType = .mp4
+        exportSession.outputFileType = .mp4
 
-            let panel = NSSavePanel()
-            panel.allowedFileTypes = ["mp4"]
-            panel.nameFieldStringValue = "compressed_video.mp4"
-            panel.begin { response in
-                if response == .OK, let exportURL = panel.url {
-                    exportSession.outputURL = exportURL
-                    exportSession.exportAsynchronously {
-                        if exportSession.status == .completed {
-                            do {
-                                let compressedData = try Data(contentsOf: exportURL)
-                                DispatchQueue.main.async {
-                                    self.videoCompressedPreview.compressedVideoData = compressedData
-                                }
-                                print("Compression completed and saved to \(exportURL)")
-                            } catch {
-                                print("Failed to read compressed video data: \(error)")
+        let panel = NSSavePanel()
+        panel.allowedFileTypes = ["mp4"]
+        panel.nameFieldStringValue = "compressed_video.mp4"
+        panel.begin { response in
+            if response == .OK, let exportURL = panel.url {
+                exportSession.outputURL = exportURL
+                exportSession.exportAsynchronously {
+                    if exportSession.status == .completed {
+                        do {
+                            let compressedData = try Data(contentsOf: exportURL)
+                            DispatchQueue.main.async {
+                                self.videoCompressedPreview.compressedVideoData = compressedData
                             }
-                        } else if let error = exportSession.error {
-                            print("Failed to compress video: \(error)")
+                            print("Compression completed and saved to \(exportURL)")
+                        } catch {
+                            print("Failed to read compressed video data: \(error)")
                         }
+                    } else if let error = exportSession.error {
+                        print("Failed to compress video: \(error)")
                     }
                 }
             }
         }
+    }
 
     private func getVideoInfo() -> VideoInfo? {
         return editedStatus.isEdited1 ? videoInfos.videoInfo1 : videoInfos.videoInfo2
@@ -274,8 +296,35 @@ struct ThumbnailView: View {
                 }
                 .buttonStyle(CustomButtonStyle(color: .black.opacity(0.7)))
             }
-            Spacer(minLength: 50)
         }
         .frame(width: 300)
+    }
+}
+
+struct UploadProgressView: View {
+    @Binding var showSuccess: Bool
+    
+    var body: some View {
+        VStack {
+            if showSuccess {
+                Image(systemName: "checkmark.circle.fill")
+                    .resizable()
+                    .frame(width: 50, height: 50)
+                    .foregroundColor(.green)
+                Text("Upload Successful")
+                    .font(.headline)
+                    .foregroundColor(.green)
+            } else {
+                Image(systemName: "arrow.up.circle.fill")
+                    .resizable()
+                    .frame(width: 50, height: 50)
+                    .foregroundColor(.blue)
+                    .rotationEffect(.degrees(showSuccess ? 0 : 360))
+                    .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false))
+                Text("Uploading...")
+                    .font(.headline)
+            }
+        }
+        .padding()
     }
 }
