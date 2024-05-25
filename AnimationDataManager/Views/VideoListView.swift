@@ -42,8 +42,12 @@ struct VideoListView: View {
                             Spacer()
                             UploadButton(action: uploadVideos)
                             BackButton(navigateBack: $navigateBack)
-                            Spacer()                        }
+                            Spacer()
+                        }
                     }
+                    LogView()
+                        .frame(width: 1200, height: 50)
+
                 }
             }
             .padding()
@@ -70,22 +74,22 @@ struct VideoListView: View {
         videoInfos.videoInfo2!.isEdited = editedStatus.isEdited2
         
         guard let videoInfo1 = videoInfos.videoInfo1 else {
-            print("Video info 1 is not available")
+            LogManager.shared.log("Video info 1 is not available")
             return
         }
 
         guard let videoInfo2 = videoInfos.videoInfo2 else {
-            print("Video info 2 is not available")
+            LogManager.shared.log("Video info 2 is not available")
             return
         }
 
         guard let thumbnailData = compressThumbnail(image: capturedThumbnailClass.thumb) else {
-            print("Thumbnail data is not available or could not be compressed")
+            LogManager.shared.log("Thumbnail data is not available or could not be compressed")
             return
         }
 
         guard let compressedVideoData = videoCompressedPreview.compressedVideoData else {
-            print("Compressed video data is not available")
+            LogManager.shared.log("Compressed video data is not available")
             return
         }
 
@@ -119,14 +123,14 @@ struct VideoListView: View {
     private func compressThumbnail(image: NSImage?) -> Data? {
         guard let image = image, let tiffData = image.tiffRepresentation,
               let bitmapImageRep = NSBitmapImageRep(data: tiffData) else {
-            print("Failed to get bitmap representation of the image")
+            LogManager.shared.log("Failed to get bitmap representation of the image")
             return nil
         }
         
         let properties: [NSBitmapImageRep.PropertyKey: Any] = [.compressionFactor: 0.7]
         var jpegData = bitmapImageRep.representation(using: .jpeg, properties: properties)
         
-        print("Initial compression factor: 0.7, Data size: \(jpegData?.count ?? 0) bytes")
+        LogManager.shared.log("Initial compression factor: 0.7, Data size: \(jpegData?.count ?? 0) bytes")
         
         // If initial compression is larger than maxSize, further reduce quality
         let maxSize = 1_000_000 // 1MB
@@ -134,7 +138,7 @@ struct VideoListView: View {
         while let data = jpegData, data.count > maxSize, compressionFactor > 0.1 {
             compressionFactor -= 0.1
             jpegData = bitmapImageRep.representation(using: .jpeg, properties: [.compressionFactor: compressionFactor])
-            print("Adjusted compression factor: \(compressionFactor), Data size: \(jpegData?.count ?? 0) bytes")
+            LogManager.shared.log("Adjusted compression factor: \(compressionFactor), Data size: \(jpegData?.count ?? 0) bytes")
         }
         
         return jpegData
@@ -170,7 +174,7 @@ struct VideoListContent: View {
 
     private func captureThumbnail() {
         guard let player = editedStatus.isEdited1 ? player1 : player2 else {
-            print("Player is not initialized")
+            LogManager.shared.log("Player is not initialized")
             return
         }
         let asset = player.currentItem?.asset as? AVURLAsset
@@ -185,26 +189,26 @@ struct VideoListContent: View {
             // Compress the thumbnail
             if let compressedThumbnail = compressThumbnail(image: image) {
                 thumbnailImage = NSImage(data: compressedThumbnail)
-                print("Thumbnail captured and compressed successfully")
+                LogManager.shared.log("Thumbnail captured and compressed successfully")
             } else {
-                print("Failed to compress thumbnail")
+                LogManager.shared.log("Failed to compress thumbnail")
             }
         } catch {
-            print("Failed to capture thumbnail: \(error)")
+            LogManager.shared.log("Failed to capture thumbnail: \(error)")
         }
     }
     
     private func compressThumbnail(image: NSImage) -> Data? {
         guard let tiffData = image.tiffRepresentation,
               let bitmapImageRep = NSBitmapImageRep(data: tiffData) else {
-            print("Failed to get bitmap representation of the image")
+            LogManager.shared.log("Failed to get bitmap representation of the image")
             return nil
         }
         
         let properties: [NSBitmapImageRep.PropertyKey: Any] = [.compressionFactor: 0.7]
         var jpegData = bitmapImageRep.representation(using: .jpeg, properties: properties)
         
-        print("Initial compression factor: 0.7, Data size: \(jpegData?.count ?? 0) bytes")
+        LogManager.shared.log("Initial compression factor: 0.7, Data size: \(jpegData?.count ?? 0) bytes")
         
         // If initial compression is larger than maxSize, further reduce quality
         let maxSize = 1_000_000 // 1MB
@@ -212,7 +216,7 @@ struct VideoListContent: View {
         while let data = jpegData, data.count > maxSize, compressionFactor > 0.1 {
             compressionFactor -= 0.1
             jpegData = bitmapImageRep.representation(using: .jpeg, properties: [.compressionFactor: compressionFactor])
-            print("Adjusted compression factor: \(compressionFactor), Data size: \(jpegData?.count ?? 0) bytes")
+            LogManager.shared.log("Adjusted compression factor: \(compressionFactor), Data size: \(jpegData?.count ?? 0) bytes")
         }
         
         return jpegData
@@ -261,19 +265,21 @@ struct CompressionSection: View {
         .cornerRadius(10)
         .shadow(radius: 5)
         .padding(30)
+        
+
     }
 
     private func compressVideo() {
         guard let videoInfo = editedStatus.isEdited1 ? videoInfos.videoInfo1 : videoInfos.videoInfo2,
               let url = videoInfo.fileURL as URL?,
               let player = editedStatus.isEdited1 ? player1 : player2 else {
-            print("Video URL or Player is not available")
+            LogManager.shared.log("Video URL or Player is not available")
             return
         }
 
         let asset = AVURLAsset(url: url)
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: compressionOptions.preset) else {
-            print("Failed to create export session")
+            LogManager.shared.log("Failed to create export session")
             return
         }
 
@@ -293,12 +299,12 @@ struct CompressionSection: View {
                             DispatchQueue.main.async {
                                 self.videoCompressedPreview.compressedVideoData = compressedData
                             }
-                            print("Compression completed and saved to \(exportURL)")
+                            LogManager.shared.log("Compression completed and saved to \(exportURL)")
                         } catch {
-                            print("Failed to read compressed video data: \(error)")
+                            LogManager.shared.log("Failed to read compressed video data: \(error)")
                         }
                     } else if let error = exportSession.error {
-                        print("Failed to compress video: \(error)")
+                        LogManager.shared.log("Failed to compress video: \(error)")
                     }
                 }
             }

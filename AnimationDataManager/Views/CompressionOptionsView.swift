@@ -22,6 +22,8 @@ struct CompressionOptionsView: View {
             Text("Compression Options Page")
                 .font(.largeTitle)
                 .padding()
+            LogView() // Add this line to display the logs
+
         }
         .padding()
     }

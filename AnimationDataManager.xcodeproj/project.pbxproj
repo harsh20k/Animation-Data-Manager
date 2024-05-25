@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3A0D9F592C01E948000EB537 /* LogManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0D9F582C01E948000EB537 /* LogManager.swift */; };
+		3A0D9F5B2C01E95D000EB537 /* Logview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0D9F5A2C01E95D000EB537 /* Logview.swift */; };
 		3A1A67D12BFBB10900DD2F13 /* VideoDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1A67D02BFBB10900DD2F13 /* VideoDetailsView.swift */; };
 		3A6225AC2BF869BB003D77CF /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A6225AB2BF869BB003D77CF /* AVKit.framework */; };
 		3ADE808F2BF742BB00F20391 /* CustomDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADE808E2BF742BB00F20391 /* CustomDivider.swift */; };
@@ -27,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3A0D9F582C01E948000EB537 /* LogManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogManager.swift; sourceTree = "<group>"; };
+		3A0D9F5A2C01E95D000EB537 /* Logview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logview.swift; sourceTree = "<group>"; };
 		3A1A67D02BFBB10900DD2F13 /* VideoDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoDetailsView.swift; sourceTree = "<group>"; };
 		3A6225AB2BF869BB003D77CF /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.5.sdk/System/Library/Frameworks/AVKit.framework; sourceTree = DEVELOPER_DIR; };
 		3A68D56B2BF88B6100AFCA25 /* Dummy.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Dummy.md; sourceTree = "<group>"; };
@@ -62,6 +66,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3A0D9F5C2C01EB74000EB537 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3A1A67D02BFBB10900DD2F13 /* VideoDetailsView.swift */,
+				3AFDC52E2BFBCCA0005EE4C1 /* VideoListView.swift */,
+				3AFDC5342BFBD5EB005EE4C1 /* UploadProgressView.swift */,
+				3AFDC53C2BFBFAFF005EE4C1 /* CompressionOptionsForm.swift */,
+				3AFDC53E2BFC05AC005EE4C1 /* CompressionOptionsView.swift */,
+				3A0D9F5A2C01E95D000EB537 /* Logview.swift */,
+				3ADE80922BF76E3B00F20391 /* VideoUploadView.swift */,
+				3AE9CB7C2BF6ABD200874353 /* VideoPreviewView.swift */,
+				3AE9CB682BF6300100874353 /* ContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		3A6225AA2BF869BA003D77CF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -90,25 +110,19 @@
 		3AE9CB652BF6300100874353 /* AnimationDataManager */ = {
 			isa = PBXGroup;
 			children = (
+				3A0D9F5C2C01EB74000EB537 /* Views */,
 				3AE9CB792BF638C000874353 /* Info.plist */,
 				3AE9CB662BF6300100874353 /* AnimationDataManagerApp.swift */,
-				3AE9CB682BF6300100874353 /* ContentView.swift */,
 				3AE9CB6A2BF6300200874353 /* Assets.xcassets */,
 				3AE9CB6C2BF6300200874353 /* AnimationDataManager.entitlements */,
 				3AE9CB6D2BF6300200874353 /* Preview Content */,
 				3AE9CB752BF6302300874353 /* CouchDBManager.swift */,
-				3AE9CB7C2BF6ABD200874353 /* VideoPreviewView.swift */,
 				3ADE808E2BF742BB00F20391 /* CustomDivider.swift */,
-				3ADE80922BF76E3B00F20391 /* VideoUploadView.swift */,
 				3ADE80942BF7815900F20391 /* PrettyToggleStyle.swift */,
 				3A68D56B2BF88B6100AFCA25 /* Dummy.md */,
-				3A1A67D02BFBB10900DD2F13 /* VideoDetailsView.swift */,
-				3AFDC52E2BFBCCA0005EE4C1 /* VideoListView.swift */,
 				3AFDC5302BFBD5A2005EE4C1 /* VideoUploadSection.swift */,
 				3AFDC5322BFBD5C1005EE4C1 /* VideoControls.swift */,
-				3AFDC5342BFBD5EB005EE4C1 /* UploadProgressView.swift */,
-				3AFDC53C2BFBFAFF005EE4C1 /* CompressionOptionsForm.swift */,
-				3AFDC53E2BFC05AC005EE4C1 /* CompressionOptionsView.swift */,
+				3A0D9F582C01E948000EB537 /* LogManager.swift */,
 			);
 			path = AnimationDataManager;
 			sourceTree = "<group>";
@@ -196,7 +210,9 @@
 				3AFDC5312BFBD5A2005EE4C1 /* VideoUploadSection.swift in Sources */,
 				3AE9CB7D2BF6ABD200874353 /* VideoPreviewView.swift in Sources */,
 				3AFDC5332BFBD5C1005EE4C1 /* VideoControls.swift in Sources */,
+				3A0D9F5B2C01E95D000EB537 /* Logview.swift in Sources */,
 				3AE9CB692BF6300100874353 /* ContentView.swift in Sources */,
+				3A0D9F592C01E948000EB537 /* LogManager.swift in Sources */,
 				3AE9CB672BF6300100874353 /* AnimationDataManagerApp.swift in Sources */,
 				3AFDC52F2BFBCCA0005EE4C1 /* VideoListView.swift in Sources */,
 				3AFDC5352BFBD5EB005EE4C1 /* UploadProgressView.swift in Sources */,

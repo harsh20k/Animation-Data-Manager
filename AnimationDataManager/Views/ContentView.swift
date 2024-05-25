@@ -6,6 +6,8 @@ struct ContentView: View {
     @EnvironmentObject var selectedFileURLs: SelectedFileURLs
     @EnvironmentObject var editedStatus: EditedStatus
     @EnvironmentObject var videoInfos: VideoInfos
+    @EnvironmentObject var capturedThumbnail: CapturedThumbnailClass
+    @EnvironmentObject var compressedVideo: VideoCompressedPreview
 
     @State private var showAlert = false
     @State private var alertMessage = ""
@@ -120,5 +122,7 @@ struct ContentView: View {
         videoInfos.videoInfo2 = nil
         player1 = nil
         player2 = nil
+        capturedThumbnail.thumb = nil
+        compressedVideo.compressedVideoData = nil
     }
 }
