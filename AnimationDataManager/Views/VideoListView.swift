@@ -47,7 +47,6 @@ struct VideoListView: View {
                     }
                     LogView()
                         .frame(width: 1200, height: 50)
-
                 }
             }
             .padding()
